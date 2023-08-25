@@ -11,11 +11,13 @@ import com.revrobotics.jni.CANSparkMaxJNI;
 
 import SushiFrcLib.Motor.MotorHelper;
 import SushiFrcLib.SmartDashboard.TunableNumber;
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.kElevator;
 
 public class Elevator extends SubsystemBase {
     private final CANSparkMax leftElevator;
@@ -24,8 +26,8 @@ public class Elevator extends SubsystemBase {
     private final TunableNumber kP;
     private final TunableNumber kI;
     private final TunableNumber kD;
-    private final TunableNumber kF;
     private final TunableNumber setpoint;
+    private final ElevatorFeedforward ff;
 
     private static Elevator instance;
 
@@ -38,16 +40,16 @@ public class Elevator extends SubsystemBase {
     }
 
     private Elevator() {
-        leftElevator = MotorHelper.createSparkMax(3, MotorType.kBrushless, true, 40, IdleMode.kBrake);
-        rightElavtor = MotorHelper.createSparkMax(20, MotorType.kBrushless, false, 40, IdleMode.kBrake, Constants.kElevator.kP, Constants.kElevator.kI, Constants.kElevator.kD, Constants.kElevator.kF);
+        leftElevator = MotorHelper.createSparkMax(3, MotorType.kBrushless, false, 40, IdleMode.kBrake);
+        rightElavtor = MotorHelper.createSparkMax(20, MotorType.kBrushless, true, 40, IdleMode.kBrake, Constants.kElevator.kP, Constants.kElevator.kI, Constants.kElevator.kD, 0);
 
         leftElevator.follow(rightElavtor, true);
 
         kP = new TunableNumber("kP", Constants.kElevator.kP, Constants.kTuningMode);
         kI = new TunableNumber("kI", Constants.kElevator.kI, Constants.kTuningMode);
         kD = new TunableNumber("kD", Constants.kElevator.kD, Constants.kTuningMode);
-        kF = new TunableNumber("kF", Constants.kElevator.kF, Constants.kTuningMode);
         setpoint = new TunableNumber("Setpoint", 0, Constants.kTuningMode);
+        ff = new ElevatorFeedforward(0, kElevator.kG, 0);
     }
 
     public void run(double speed) {
@@ -74,10 +76,16 @@ public class Elevator extends SubsystemBase {
             rightElavtor.getPIDController().setD(kD.get());
             leftElevator.getPIDController().setD(kD.get());
         }
-        if (kF.hasChanged()) {
-            rightElavtor.getPIDController().setFF(kF.get());
-            leftElevator.getPIDController().setFF(kF.get());
-        }
+
+
+        rightElavtor.getPIDController().setReference(
+            setpoint.get(),
+            CANSparkMax.ControlType.kPosition,
+            0,
+            ff.calculate(0)
+        );
+
+
         SmartDashboard.putNumber("Current", rightElavtor.getOutputCurrent());
         SmartDashboard.putNumber("Left Position", leftElevator.getEncoder().getPosition());
         SmartDashboard.putNumber("Right Position", rightElavtor.getEncoder().getPosition());

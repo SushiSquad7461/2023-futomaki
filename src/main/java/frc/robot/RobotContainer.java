@@ -29,7 +29,7 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    elavator.setDefaultCommand(new InstantCommand(() -> elavator.run(OI.getInstance().getDriverController().getLeftY()/2), elavator));
+    // elavator.setDefaultCommand(new InstantCommand(() -> elavator.run(OI.getInstance().getDriverController().getLeftY()/2), elavator));
   }
 
   /**
