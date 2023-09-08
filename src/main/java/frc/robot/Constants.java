@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import SushiFrcLib.Swerve.SwerveModuleConstants;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -25,4 +27,18 @@ public final class Constants {
     public static final double kD = 0;
     public static final double kG = 0.4; // increase later properly tune
   }
+
+  public static class kManipulator {
+    public static final int kSpinMotorID = -1;
+    public static final int kPositionMotorID = 24;
+    public static final double kP = 0;
+    public static final double kI = 0;
+    public static final double kD = 0;
+    public static final double kG = 0.05;
+    public static final double kS = 0;
+    public static final double kA = 0;
+    public static final double kV = 0;
+  }
+
+  
 }
