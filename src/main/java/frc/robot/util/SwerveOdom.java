@@ -2,7 +2,6 @@ package frc.robot.util;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
@@ -15,7 +14,7 @@ public class SwerveOdom {
     public SwerveOdom(SwerveKinematics kinematics) {
         this.kinematics = kinematics;
 
-        currPos = new Pose2d(new Translation2d(0, 0), new Rotation2d(0));
+        currPos = new Pose2d(0,0, new Rotation2d(0));
 
         prevSwerveModulePositions = new SwerveModulePosition[]{null, null, null, null};
 

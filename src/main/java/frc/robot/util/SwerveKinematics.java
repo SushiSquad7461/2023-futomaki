@@ -58,7 +58,6 @@ public class SwerveKinematics {
         double x = translation.getX() - (rot * r.getX()); // Module velocity sub x = robot velocity sub x - (angular velo) * (translation vectory y)
         double y = translation.getY() + (rot * r.getY()); // Module velocity sub y = robot velocity sub y + (angular velo) * (translation vectory x)
 
-
         return new SwerveModuleState(
             Math.sqrt(x * x + y * y), 
             Rotation2d.fromRadians(
