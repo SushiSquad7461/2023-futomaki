@@ -1,12 +1,20 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants.kOI;
 
+/** 
+ * Handels xbox controllers.
+*/
 public class OI {
-    private static OI instance;
     private CommandXboxController driverController;
+    private CommandXboxController operatorController;
 
+    private static OI instance;
 
+    /**
+     * Makes class a singelton.
+     */
     public static OI getInstance() {
         if (instance == null) {
             instance = new OI();
@@ -15,10 +23,32 @@ public class OI {
     }
 
     private OI() {
-        driverController = new CommandXboxController(0);
+        driverController = new CommandXboxController(kOI.DRIVE_PORT);
+        operatorController = new CommandXboxController(kOI.OPERATOR_PORT);
+
+    }
+
+    public double getDriveTrainRotation() {
+        return getRawAxis(kOI.DRIVE_ROTATE);
+    }
+
+    public double getDriveTrainTranslationY() {
+        return (getRawAxis(kOI.DRIVE_TRANSLATION_Y));
+    }
+
+    public double getDriveTrainTranslationX() {
+        return(getRawAxis(kOI.DRIVE_TRANSLATION_X));
+    }
+
+    private double getRawAxis(int id) {
+        return driverController.getHID().getRawAxis(id) * -1;
     }
 
     public CommandXboxController getDriverController() {
         return driverController;
+    }
+
+    public CommandXboxController getOperatorController() {
+        return operatorController;
     }
 }
