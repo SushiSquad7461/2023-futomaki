@@ -25,4 +25,21 @@ public final class Constants {
     public static final double kD = 0;
     public static final double kG = 0.4; // increase later properly tune
   }
+
+  public static class kManipulator {
+    public static final double kP = 0;
+    public static final double kI = 0;
+    public static final double kD = 0;
+    public static final double kG = 0.05;
+    public static final double kS = 0;
+    public static final double kA = 0;
+    public static final double kV = 0;
+    public static final int kSpinMotorID = 0;
+    public static final int kPositionMotorID = 0;
+
+    public static final double ManipulatorGearRatio = 160/3; //160:3
+    public static final int Encoder_Channel = 0;
+    public static final int ENCODER_ANGLE_OFFSET = 0;
+  }
+
 }

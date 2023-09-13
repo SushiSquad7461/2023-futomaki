@@ -21,7 +21,7 @@ import frc.robot.Constants.kElevator;
 
 public class Elevator extends SubsystemBase {
     private final CANSparkMax leftElevator;
-    private final CANSparkMax rightElavtor;
+    private final CANSparkMax rightElevator;
 
     private final TunableNumber kP;
     private final TunableNumber kI;
@@ -41,9 +41,9 @@ public class Elevator extends SubsystemBase {
 
     private Elevator() {
         leftElevator = MotorHelper.createSparkMax(3, MotorType.kBrushless, false, 40, IdleMode.kBrake);
-        rightElavtor = MotorHelper.createSparkMax(20, MotorType.kBrushless, true, 40, IdleMode.kBrake, Constants.kElevator.kP, Constants.kElevator.kI, Constants.kElevator.kD, 0);
+        rightElevator = MotorHelper.createSparkMax(20, MotorType.kBrushless, true, 40, IdleMode.kBrake, Constants.kElevator.kP, Constants.kElevator.kI, Constants.kElevator.kD, 0);
 
-        leftElevator.follow(rightElavtor, true);
+        leftElevator.follow(rightElevator, true);
 
         kP = new TunableNumber("kP", Constants.kElevator.kP, Constants.kTuningMode);
         kI = new TunableNumber("kI", Constants.kElevator.kI, Constants.kTuningMode);
@@ -53,32 +53,32 @@ public class Elevator extends SubsystemBase {
     }
 
     public void run(double speed) {
-        rightElavtor.set(speed);
+        rightElevator.set(speed);
     }
 
     public void pid(double value) {
         setpoint.setDefault(value);
-        rightElavtor.getPIDController().setReference(setpoint.get(), ControlType.kPosition);
+        rightElevator.getPIDController().setReference(setpoint.get(), ControlType.kPosition);
     }
 
 
     @Override
     public void periodic() {
         if (kP.hasChanged()) {
-            rightElavtor.getPIDController().setP(kP.get());
+            rightElevator.getPIDController().setP(kP.get());
             leftElevator.getPIDController().setP(kP.get());
         }
         if (kI.hasChanged()) {
-            rightElavtor.getPIDController().setI(kI.get());
+            rightElevator.getPIDController().setI(kI.get());
             leftElevator.getPIDController().setI(kI.get());
         }
         if (kD.hasChanged()) {
-            rightElavtor.getPIDController().setD(kD.get());
+            rightElevator.getPIDController().setD(kD.get());
             leftElevator.getPIDController().setD(kD.get());
         }
 
 
-        rightElavtor.getPIDController().setReference(
+        rightElevator.getPIDController().setReference(
             setpoint.get(),
             CANSparkMax.ControlType.kPosition,
             0,
@@ -86,9 +86,9 @@ public class Elevator extends SubsystemBase {
         );
 
 
-        SmartDashboard.putNumber("Current", rightElavtor.getOutputCurrent());
+        SmartDashboard.putNumber("Current", rightElevator.getOutputCurrent());
         SmartDashboard.putNumber("Left Position", leftElevator.getEncoder().getPosition());
-        SmartDashboard.putNumber("Right Position", rightElavtor.getEncoder().getPosition());
+        SmartDashboard.putNumber("Right Position", rightElevator.getEncoder().getPosition());
 
     }
 }
