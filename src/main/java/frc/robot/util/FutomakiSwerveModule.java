@@ -19,7 +19,7 @@ import SushiFrcLib.Swerve.SDSModules;
 public class FutomakiSwerveModule extends SwerveModuleConstants {
 
     public FutomakiSwerveModule(int moduleNumber, double angleOffset, SDSModules moduleInfo) {
-        super(moduleNumber, angleOffset, moduleInfo, kSwerve.MAX_SPEED);
+        super(moduleNumber, angleOffset, moduleInfo, kSwerve.MAX_SPEED, kSwerve.SWERVE_TUNNING_MODE);
     }
 
     @Override
@@ -72,13 +72,9 @@ public class FutomakiSwerveModule extends SwerveModuleConstants {
         anglePID.setD(kSwerve.ANGLE_D);
         anglePID.setFF(kSwerve.ANGLE_F);
 
-        anglePID.setPositionPIDWrappingEnabled(true);
-        anglePID.setPositionPIDWrappingMaxInput(2 * Math.PI);
-        anglePID.setPositionPIDWrappingMinInput(0);
-
         RelativeEncoder angleEncoder = neo.getEncoder();
-        angleEncoder.setPositionConversionFactor(angleRotationsToRadians);
-        angleEncoder.setVelocityConversionFactor(angleRMPToRadiansPerSec);
+        angleEncoder.setPositionConversionFactor(angleRotationsToDegrees);
+        angleEncoder.setVelocityConversionFactor(angleRMPToDegreesPerSec);
 
         return neo;
     }

@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.kPorts;
 import frc.robot.Constants.kSwerve;
-import frc.robot.util.SwerveOdom;
 
 public class Swerve extends SubsystemBase {
     private final SwerveModule[] swerveMods;
@@ -38,10 +37,10 @@ public class Swerve extends SubsystemBase {
 
 
         swerveMods = new SwerveModuleNeoFalcon[]{
-            // new SwerveModuleNeoFalcon(kSwerve.MOD0_CONSTANTS),
-            // new SwerveModuleNeoFalcon(kSwerve.MOD1_CONSTANTS),
+            new SwerveModuleNeoFalcon(kSwerve.MOD0_CONSTANTS),
+            new SwerveModuleNeoFalcon(kSwerve.MOD1_CONSTANTS),
             new SwerveModuleNeoFalcon(kSwerve.MOD2_CONSTANTS),
-            // new SwerveModuleNeoFalcon(kSwerve.MOD3_CONSTANTS),
+            new SwerveModuleNeoFalcon(kSwerve.MOD3_CONSTANTS),
         }; 
 
         // odom = new SwerveOdom(kSwerve.SWERVE_KINEMATICS);

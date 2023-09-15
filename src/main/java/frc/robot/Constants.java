@@ -63,14 +63,14 @@ public final class Constants {
         public static final boolean GYRO_INVERSION = false; // Always ensure Gyro is CCW+ CW-
 
         /* Drivetrain Constants */
-        public static final double TRACK_WIDTH = Units.inchesToMeters(21.73);
-        public static final double WHEEL_BASE = Units.inchesToMeters(21.73);
+        public static final double TRACK_WIDTH = Units.inchesToMeters(28);
+        public static final double WHEEL_BASE = Units.inchesToMeters(28);
         public static final double WHEEL_DIAMATER = Units.inchesToMeters(4);
         public static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMATER * Math.PI;
 
         public static final SwerveKinematics SWERVE_KINEMATICS = new SwerveKinematics(
-                new Translation2d(WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0),
                 new Translation2d(WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0),
+                new Translation2d(WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0),
                 new Translation2d(-WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0),
                 new Translation2d(-WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0));
 
@@ -79,10 +79,10 @@ public final class Constants {
         public static final int DRIVE_CURRENT_LIMIT = 40;
 
         /* Angle Motor PID Values */
-        public static final double ANGLE_P = 0.3;
+        public static final double ANGLE_P = 0.005; // 0.3
         public static final double ANGLE_I = 0.0;
-        public static final double ANGLE_D = 12.0;
-        public static final double ANGLE_F = 0.0;
+        public static final double ANGLE_D = 0.0;
+        public static final double ANGLE_F = 0.0; // 12.0
 
         /* Drive Motor PID Values */
         public static final double DRIVE_P = 0.009000;
@@ -98,10 +98,12 @@ public final class Constants {
 
         /* Motor Inverts */
         public static final boolean DRIVE_INVERSION = false;
-        public static final boolean ANGLE_INVERSION = true; // make false if we have a stroke
+        public static final boolean ANGLE_INVERSION = false; // make true if we have a stroke
 
         /* Angle Encoder Invert */
         public static final boolean CANCODER_INVERSION = true;
+
+        public static final boolean SWERVE_TUNNING_MODE = true;
 
         public static final SwerveModuleConstants MOD0_CONSTANTS = new FutomakiSwerveModule(0, 249.9, SDSModules.MK4i);
         public static final SwerveModuleConstants MOD1_CONSTANTS = new FutomakiSwerveModule(1, 68.291, SDSModules.MK4i);
