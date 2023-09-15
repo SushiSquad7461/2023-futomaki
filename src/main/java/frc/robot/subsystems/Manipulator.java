@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import SushiFrcLib.Motor.MotorHelper;
@@ -29,7 +30,7 @@ public class Manipulator extends SubsystemBase {
 
     public Manipulator() {
         spinMotor = MotorHelper.createSparkMax(kManipulator.kSpinMotorID, MotorType.kBrushless);
-        positionMotor = new CANSparkMax(kManipulator.kPositionMotorID, MotorType.kBrushless); // use MotorHelper.createSpark max
+        positionMotor = MotorHelper.createSparkMax(kManipulator.kPositionMotorID, MotorType.kBrushless);
         positionPIDControl = positionMotor.getPIDController();
 
         kP = new TunableNumber("kP", kManipulator.kP, Constants.kTuningMode);
@@ -38,9 +39,13 @@ public class Manipulator extends SubsystemBase {
 
         wristFeedforward = new ArmFeedforward(kManipulator.kS, kManipulator.kG, kManipulator.kV, kManipulator.kA); 
         absoluteEncoder = new AbsoluteEncoder(kManipulator.Encoder_Channel, kManipulator.ENCODER_ANGLE_OFFSET);
-       
-        positionMotor.getEncoder().setPositionConversionFactor(0);
-        positionMotor.getEncoder().setVelocityConversionFactor(0);
+        
+
+        positionMotor.getEncoder().setPositionConversionFactor(360/ kManipulator.GearRatio);
+        positionMotor.getEncoder().setVelocityConversionFactor(360/ kManipulator.GearRatio / 60);
+
+        positionMotor.getEncoder().setPosition(absoluteEncoder.getPosition()); //setting relative to absolute encoder
+
     } 
     
     public void setAngle(double speed) {
@@ -58,9 +63,9 @@ public class Manipulator extends SubsystemBase {
 
         positionPIDControl.setReference(
             target, 
-            null, 
+            ControlType.kPosition, 
             0, 
-            wristFeedforward.calculate(positionMotor.getEncoder().getPosition(), 0, 0)
+            wristFeedforward.calculate((positionMotor.getEncoder().getPosition()) * Math.PI/180, 0, 0)
         );
     }
 }

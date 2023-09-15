@@ -37,7 +37,7 @@ public final class Constants {
     public static final int kSpinMotorID = 0;
     public static final int kPositionMotorID = 0;
 
-    public static final double ManipulatorGearRatio = 160/3; //160:3
+    public static final double GearRatio = 160/3; //160:3
     public static final int Encoder_Channel = 0;
     public static final int ENCODER_ANGLE_OFFSET = 0;
   }
