@@ -41,18 +41,20 @@ public final class Constants {
     }
 
     public static class kElevator {
-        public static final double kP = 0.04  ;
+        public static final double kP = 0.15;
         public static final double kI = 0;
         public static final double kD = 0;
-        public static final double kG = 0.4; // increase later properly tune
+        public static final double kG = 0.2; // properly tuned
     }
 
     public static class kManipulator {
         public static final int kSpinMotorID = -1;
         public static final int kPositionMotorID = 24;
+
         public static final double kP = 0;
         public static final double kI = 0;
         public static final double kD = 0;
+
         public static final double kG = 0.05;
         public static final double kS = 0;
         public static final double kA = 0;
@@ -103,7 +105,7 @@ public final class Constants {
         /* Angle Encoder Invert */
         public static final boolean CANCODER_INVERSION = true;
 
-        public static final boolean SWERVE_TUNNING_MODE = true;
+        public static final boolean SWERVE_TUNNING_MODE = false;
 
         public static final SwerveModuleConstants MOD0_CONSTANTS = new FutomakiSwerveModule(0, 249.9, SDSModules.MK4i);
         public static final SwerveModuleConstants MOD1_CONSTANTS = new FutomakiSwerveModule(1, 68.291, SDSModules.MK4i);
