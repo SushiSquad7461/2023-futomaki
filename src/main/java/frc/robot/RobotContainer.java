@@ -17,18 +17,14 @@ import edu.wpi.first.wpilibj2.command.Command;
  */
 public class RobotContainer {
   private final OI oi;
-  // private final Elevator elavator;
 
   public RobotContainer() {                     
-    // elavator = Elevator.getInstance();
-    // new Manipulator();
     oi = OI.getInstance();
     Elevator.getInstance();
     configureBindings();
   }
 
   private void configureBindings() {
-    // elavator.setDefaultCommand(new InstantCommand(() -> elavator.run(OI.getInstance().getDriverController().getLeftY()/2), elavator));
     Swerve.getInstance().setDefaultCommand(
       new TeleopSwerveDrive(
           Swerve.getInstance(), 
