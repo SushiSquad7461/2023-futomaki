@@ -36,7 +36,7 @@ public final class Constants {
     }
 
     public static class kPorts {
-        public static final String CANIVORE_NAME = "";
+        public static final String CANIVORE_NAME = "Sussy Squad";
         public static final int PIGEON_ID = 13;
     }
 
