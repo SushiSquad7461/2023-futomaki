@@ -16,7 +16,7 @@ import frc.robot.Constants.kElevator;
 
 public class Elevator extends SubsystemBase {
     private final CANSparkMax leftElevator;
-    private final CANSparkMax rightElavtor;
+    private final CANSparkMax rightElevator;
 
     // private final PIDTuning pid;
 
@@ -35,9 +35,9 @@ public class Elevator extends SubsystemBase {
 
     private Elevator() {
         leftElevator = MotorHelper.createSparkMax(22, MotorType.kBrushless, false, 40, IdleMode.kBrake);
-        rightElavtor = MotorHelper.createSparkMax(20, MotorType.kBrushless, true, 40, IdleMode.kBrake, Constants.kElevator.kP, Constants.kElevator.kI, Constants.kElevator.kD, 0);
+        rightElevator = MotorHelper.createSparkMax(20, MotorType.kBrushless, true, 40, IdleMode.kBrake, Constants.kElevator.kP, Constants.kElevator.kI, Constants.kElevator.kD, 0);
 
-        leftElevator.follow(rightElavtor, true);
+        leftElevator.follow(rightElevator, true);
 
         // pid = new PIDTuning(kElevator.kP, kElevator.kI, kElevator.kD, Constants.kTuningMode);
       
@@ -54,7 +54,7 @@ public class Elevator extends SubsystemBase {
     public void periodic() {
         // pid.updatePID(rightElavtor);
 
-        rightElavtor.getPIDController().setReference(
+        rightElevator.getPIDController().setReference(
             setpoint.get(),
             CANSparkMax.ControlType.kPosition,
             0,
@@ -62,8 +62,8 @@ public class Elevator extends SubsystemBase {
         );
 
 
-        SmartDashboard.putNumber("Current", rightElavtor.getOutputCurrent());
+        SmartDashboard.putNumber("Current", rightElevator.getOutputCurrent());
         SmartDashboard.putNumber("Left Position", leftElevator.getEncoder().getPosition());
-        SmartDashboard.putNumber("Right Position", rightElavtor.getEncoder().getPosition());
+        SmartDashboard.putNumber("Right Position", rightElevator.getEncoder().getPosition());
     }
 }

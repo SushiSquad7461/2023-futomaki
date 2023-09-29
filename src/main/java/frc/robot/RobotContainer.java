@@ -5,7 +5,9 @@
 package frc.robot;
 
 import frc.robot.commands.TeleopSwerveDrive;
+import frc.robot.subsystems.BuddyClimb;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Swerve;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -20,8 +22,11 @@ public class RobotContainer {
 
   public RobotContainer() {                     
     oi = OI.getInstance();
-    Elevator.getInstance();
+    // Elevator.getInstance();
+    new Manipulator();
     configureBindings();
+
+    new BuddyClimb();
   }
 
   private void configureBindings() {

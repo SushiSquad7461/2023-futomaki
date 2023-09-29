@@ -47,20 +47,6 @@ public final class Constants {
         public static final double kG = 0.2; // properly tuned
     }
 
-    public static class kManipulator {
-        public static final int kSpinMotorID = -1;
-        public static final int kPositionMotorID = 24;
-
-        public static final double kP = 0;
-        public static final double kI = 0;
-        public static final double kD = 0;
-
-        public static final double kG = 0.05;
-        public static final double kS = 0;
-        public static final double kA = 0;
-        public static final double kV = 0;
-    }
-
     public static final class kSwerve {
         public static final boolean GYRO_INVERSION = false; // Always ensure Gyro is CCW+ CW-
 
@@ -112,4 +98,21 @@ public final class Constants {
         public static final SwerveModuleConstants MOD2_CONSTANTS = new FutomakiSwerveModule(2, 268.33, SDSModules.MK4i);
         public static final SwerveModuleConstants MOD3_CONSTANTS = new FutomakiSwerveModule(3, 194.58, SDSModules.MK4i);
     }
+
+  public static class kManipulator {
+    public static final double kP = 0;
+    public static final double kI = 0;
+    public static final double kD = 0;
+    public static final double kG = 0.05;
+    public static final double kS = 0;
+    public static final double kA = 0;
+    public static final double kV = 0;
+    public static final int kSpinMotorID = 24;
+    public static final int kPositionMotorID = 21;
+
+    public static final double ManipulatorGearRatio = 160/3; //160:3
+    public static final int Encoder_Channel = 6;
+    public static final double ENCODER_ANGLE_OFFSET = 0.0;
+  }
+
 }
