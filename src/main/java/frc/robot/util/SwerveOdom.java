@@ -11,7 +11,7 @@ public class SwerveOdom {
  
     private SwerveModulePosition[] prevSwerveModulePositions;
 
-    public SwerveOdom(SwerveKinematics kinematics) {
+    public SwerveOdom(SwerveKinematics kinematics, SwerveModulePosition[] swerveModulePositions) {
         this.kinematics = kinematics;
 
         currPos = new Pose2d(0,0, new Rotation2d(0));
@@ -19,7 +19,7 @@ public class SwerveOdom {
         prevSwerveModulePositions = new SwerveModulePosition[]{null, null, null, null};
 
         for (int i=0; i < 4; ++i) {
-            prevSwerveModulePositions[i] = new SwerveModulePosition(0, Rotation2d.fromDegrees(0));
+            prevSwerveModulePositions[i] = swerveModulePositions[i];
         }
     }
 
@@ -51,5 +51,9 @@ public class SwerveOdom {
 
     public Pose2d getPose() {
         return currPos;
+    }
+
+    public SwerveKinematics getKinematics() {
+        return kinematics;
     }
 }

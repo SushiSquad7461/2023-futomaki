@@ -85,13 +85,13 @@ public final class Constants {
         public static final double ANGLE_F = 0.0; // 12.0
 
         /* Drive Motor PID Values */
-        public static final double DRIVE_P = 0.009000;
+        public static final double DRIVE_P = 0.01700; // 0.009
         public static final double DRIVE_I = 0.0;
         public static final double DRIVE_D = 0.0;
-        public static final double DRIVE_F = 0.046;
+        public static final double DRIVE_F = 0.0458;
 
         /* Swerve Profiling Values */
-        public static final double MAX_SPEED = 10; // 4.5 meters per second
+        public static final double MAX_SPEED = 5; // 4.5 meters per second
         public static final double MAX_ACCELERATION = 4; // 2
         public static final double MAX_ANGULAR_VELOCITY = 10; // 11.5
         public static final double MAX_ANGULAR_ACCELERATION = 20; // 11.5

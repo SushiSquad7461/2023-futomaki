@@ -20,8 +20,8 @@ public class SwerveKinematics {
         forwardKinematics = new SimpleMatrix(8, 3);
 
         for (int i = 0; i < 4; ++i) {
-            forwardKinematics.setRow(i * 2 + 0, 0, /* Start Data */ 1, 0, -modVectors[i].getY());
-            forwardKinematics.setRow(i * 2 + 1, 0, /* Start Data */ 0, 1, +modVectors[i].getX());
+            forwardKinematics.setRow(i * 2 + 0, 0, /* Start Data */ 1, 0, -1 * modVectors[i].getY());
+            forwardKinematics.setRow(i * 2 + 1, 0, /* Start Data */ 0, 1, modVectors[i].getX());
         }
 
         forwardKinematics = forwardKinematics.pseudoInverse();
