@@ -55,7 +55,7 @@ public class Elevator extends SubsystemBase {
         // pid.updatePID(rightElavtor);
 
         rightElevator.getPIDController().setReference(
-            setpoint.get(),
+            setpoint.get() > 50 || setpoint.get() < 0 ? 10 : setpoint.get(),
             CANSparkMax.ControlType.kPosition,
             0,
             ff.calculate(0)

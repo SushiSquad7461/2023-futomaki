@@ -4,12 +4,14 @@
 
 package frc.robot;
 
+import frc.robot.Constants.RobotState;
 import frc.robot.commands.TeleopSwerveDrive;
 import frc.robot.subsystems.BuddyClimb;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Swerve;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -19,11 +21,13 @@ import edu.wpi.first.wpilibj2.command.Command;
  */
 public class RobotContainer {
   private final OI oi;
+  private final Manipulator manipulator;
+  private final Elevator elevator;
 
   public RobotContainer() {                     
     oi = OI.getInstance();
-    // Elevator.getInstance();
-    new Manipulator();
+    elevator = Elevator.getInstance();
+    manipulator = Manipulator.getInstance();
     configureBindings();
 
     new BuddyClimb();
@@ -38,7 +42,21 @@ public class RobotContainer {
           () -> oi.getDriveTrainRotation()
       )
     );
+
+    oi.getDriverController().y().onTrue(manipulator.runWristForward());
+    oi.getDriverController().a().onTrue(manipulator.runWirstBackward());
+    oi.getDriverController().x().onTrue(manipulator.stopWirstBackward());
+
+    oi.getDriverController().b().onTrue(setRobotState(RobotState.GROUND_CONE));
   }
+
+  private Command setRobotState(Constants.RobotState state) {
+    return new InstantCommand(() -> {
+      elevator.pid(state.elevatorPos);
+      manipulator.runWrist(state.getManipulatorSpeed());
+      manipulator.setAngle(state.wristPos);
+    }, elevator, manipulator);
+  } 
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

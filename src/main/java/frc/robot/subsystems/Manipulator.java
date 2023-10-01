@@ -12,6 +12,7 @@ import SushiFrcLib.SmartDashboard.TunableNumber;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.kManipulator;
@@ -21,13 +22,22 @@ public class Manipulator extends SubsystemBase {
     private final CANSparkMax positionMotor;
     private final PIDTuning pid;
 
+
     private final ArmFeedforward wristFeedforward;
     private final AbsoluteEncoder absoluteEncoder;
 
     private double target;
+    private final TunableNumber targetTunable;
 
-    public Manipulator() {
+    public static Manipulator getInstance() {
+        return new Manipulator();
+    }
+
+    // 1 8 for upright cone
+
+    private Manipulator() {
         spinMotor = MotorHelper.createSparkMax(kManipulator.kSpinMotorID, MotorType.kBrushless);
+        spinMotor.setSmartCurrentLimit(25);
         positionMotor = new CANSparkMax(kManipulator.kPositionMotorID, MotorType.kBrushless); // use MotorHelper.createSpark max
 
         pid = new PIDTuning(kManipulator.kP, kManipulator.kI, kManipulator.kD, Constants.kTuningMode);
@@ -37,26 +47,59 @@ public class Manipulator extends SubsystemBase {
        
         positionMotor.getEncoder().setPositionConversionFactor(360 / kManipulator.ManipulatorGearRatio);
         positionMotor.getEncoder().setVelocityConversionFactor((360 / kManipulator.ManipulatorGearRatio) / 60);
+
+        positionMotor.getEncoder().setPosition(absoluteEncoder.getPosition());
+
+        targetTunable = new TunableNumber("Wrist target", 0, Constants.kTuningMode);
     } 
     
-    public void setAngle(double speed) {
-        target = speed;
+    public void setAngle(double angle) {
+        target = angle;
+        targetTunable.setDefault(angle);
     }
 
     public void setPosition(double position) {
         positionMotor.getEncoder().setPosition(position);
     }
 
+    public void runWrist(double speed) {
+        spinMotor.set(speed);
+    }
+
+    public Command runWristForward() {
+        return runOnce(() -> {
+            spinMotor.set(1.0);
+        });
+    }
+
+    public Command runWirstBackward() {
+        return runOnce(() -> {
+            spinMotor.set(-1.0);
+        });
+    }
+
+    public Command stopWirstBackward() {
+        return runOnce(() -> {
+            spinMotor.set(0.0);
+        });
+    }
+
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Positon", positionMotor.getEncoder().getPosition());
-        SmartDashboard.putNumber("Absolute Positon", absoluteEncoder.getPosition() );
+        SmartDashboard.putNumber("Absolute Positon", absoluteEncoder.getPosition());
+        SmartDashboard.putNumber("Manipulator Current", spinMotor.getOutputCurrent());
+        pid.updatePID(positionMotor);
+
+        if (Math.abs(absoluteEncoder.getPosition() - positionMotor.getEncoder().getPosition()) > 1 ) {
+            positionMotor.getEncoder().setPosition(absoluteEncoder.getPosition());
+        }
 
         positionMotor.getPIDController().setReference(
-            target, 
+            targetTunable.get() > 100 || targetTunable.get() < -30 ? 0 : targetTunable.get(), 
             ControlType.kPosition, 
             0, 
-            wristFeedforward.calculate(positionMotor.getEncoder().getPosition(), 0, 0)
+            wristFeedforward.calculate(Math.toRadians(positionMotor.getEncoder().getPosition()), 0, 0)
         );
     }
 }

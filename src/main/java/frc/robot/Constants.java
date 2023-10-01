@@ -100,19 +100,47 @@ public final class Constants {
     }
 
   public static class kManipulator {
-    public static final double kP = 0;
+    public static final double kP = 0.03;
     public static final double kI = 0;
     public static final double kD = 0;
-    public static final double kG = 0.05;
+
+    public static final double kG = 0.0;
     public static final double kS = 0;
     public static final double kA = 0;
     public static final double kV = 0;
+
     public static final int kSpinMotorID = 24;
     public static final int kPositionMotorID = 21;
 
     public static final double ManipulatorGearRatio = 160/3; //160:3
-    public static final int Encoder_Channel = 6;
-    public static final double ENCODER_ANGLE_OFFSET = 0.0;
+    public static final int Encoder_Channel = 5;
+    public static final double ENCODER_ANGLE_OFFSET = (-74.6);
   }
+  public enum RobotState {
+    IDLE(0, 90, -1.0), 
+    GROUND_CONE(3, 0, -1.0),
+    GROUND_CUBE(3, 0, 1.0),
+    DOUBLE_CONE(0, 0, 0),
+    L1_SCORE_CUBE(0,0,0),
+    L2_SCORE_CUBE(0,0,0),
+    L3_SCORE_CUBE(0,0,0),
+    L1_SCORE_CONE(0,0,0),
+    L2_SCORE_CONE(0,0,0),
+    L3_SCORE_CONE(45,-20,1.0);
 
+
+    public double elevatorPos;
+    public double wristPos;
+    private double manipulatorSpeed;
+
+    private RobotState(double elevatorPos, double wristPos, double manipulatorSpeed) {
+        this.elevatorPos = elevatorPos;
+        this.wristPos = wristPos;
+        this.manipulatorSpeed = manipulatorSpeed;
+    }
+
+    public double getElevatorPos() {return elevatorPos; }
+    public double getWristPos() {return wristPos; }
+    public double getManipulatorSpeed() {return manipulatorSpeed;}
+  }
 }
