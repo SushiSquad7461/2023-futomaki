@@ -48,7 +48,7 @@ public class Manipulator extends SubsystemBase {
         positionMotor.getEncoder().setPositionConversionFactor(360 / kManipulator.ManipulatorGearRatio);
         positionMotor.getEncoder().setVelocityConversionFactor((360 / kManipulator.ManipulatorGearRatio) / 60);
 
-        positionMotor.getEncoder().setPosition(absoluteEncoder.getPosition());
+        positionMotor.getEncoder().setPosition(absoluteEncoder.getNormalizedPosition());
 
         targetTunable = new TunableNumber("Wrist target", 0, Constants.kTuningMode);
     } 
@@ -89,10 +89,11 @@ public class Manipulator extends SubsystemBase {
         SmartDashboard.putNumber("Positon", positionMotor.getEncoder().getPosition());
         SmartDashboard.putNumber("Absolute Positon", absoluteEncoder.getPosition());
         SmartDashboard.putNumber("Manipulator Current", spinMotor.getOutputCurrent());
+
         pid.updatePID(positionMotor);
 
         if (Math.abs(absoluteEncoder.getPosition() - positionMotor.getEncoder().getPosition()) > 1 ) {
-            positionMotor.getEncoder().setPosition(absoluteEncoder.getPosition());
+            positionMotor.getEncoder().setPosition(absoluteEncoder.getNormalizedPosition());
         }
 
         positionMotor.getPIDController().setReference(
