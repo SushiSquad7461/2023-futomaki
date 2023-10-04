@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.BuddyClimb;
 import frc.robot.subsystems.Elevator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -22,8 +23,10 @@ public class RobotContainer {
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   private final Elevator elavator;
+  private final BuddyClimb buddyClimb;
 
   public RobotContainer() {
+    buddyClimb = new BuddyClimb();
     elavator = Elevator.getInstance();
     configureBindings();
   }
