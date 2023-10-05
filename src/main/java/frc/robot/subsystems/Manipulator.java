@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.RobotState;
 import frc.robot.Constants.kManipulator;
 
 public class Manipulator extends SubsystemBase {
@@ -26,8 +27,7 @@ public class Manipulator extends SubsystemBase {
     private final ArmFeedforward wristFeedforward;
     private final AbsoluteEncoder absoluteEncoder;
 
-    private double target;
-    private final TunableNumber targetTunable;
+     private final TunableNumber targetTunable;
 
     public static Manipulator getInstance() {
         return new Manipulator();
@@ -37,7 +37,7 @@ public class Manipulator extends SubsystemBase {
 
     private Manipulator() {
         spinMotor = MotorHelper.createSparkMax(kManipulator.kSpinMotorID, MotorType.kBrushless);
-        spinMotor.setSmartCurrentLimit(25);
+        spinMotor.setSmartCurrentLimit(40);
         positionMotor = new CANSparkMax(kManipulator.kPositionMotorID, MotorType.kBrushless); // use MotorHelper.createSpark max
 
         pid = new PIDTuning(kManipulator.kP, kManipulator.kI, kManipulator.kD, Constants.kTuningMode);
@@ -50,20 +50,17 @@ public class Manipulator extends SubsystemBase {
 
         positionMotor.getEncoder().setPosition(absoluteEncoder.getNormalizedPosition());
 
-        targetTunable = new TunableNumber("Wrist target", 0, Constants.kTuningMode);
+        targetTunable = new TunableNumber("Wrist target", RobotState.IDLE.getWristPos(), Constants.kTuningMode);
     } 
     
-    public void setAngle(double angle) {
-        target = angle;
-        targetTunable.setDefault(angle);
+    public Command setPosition(double position) {
+        return runOnce(
+            () -> targetTunable.setDefault(position) 
+        ).until(() -> getError() < 1);
     }
 
-    public void setPosition(double position) {
-        positionMotor.getEncoder().setPosition(position);
-    }
-
-    public void runWrist(double speed) {
-        spinMotor.set(speed);
+    public Command runWrist(double speed) {
+        return runOnce(() -> spinMotor.set(speed));
     }
 
     public Command runWristForward() {
@@ -82,6 +79,10 @@ public class Manipulator extends SubsystemBase {
         return runOnce(() -> {
             spinMotor.set(0.0);
         });
+    }
+
+    public double getError() {
+        return Math.abs(positionMotor.getEncoder().getPosition() - targetTunable.get());
     }
 
     @Override

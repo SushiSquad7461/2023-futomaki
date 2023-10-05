@@ -10,8 +10,10 @@ import SushiFrcLib.SmartDashboard.PIDTuning;
 import SushiFrcLib.SmartDashboard.TunableNumber;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.RobotState;
 import frc.robot.Constants.kElevator;
 
 public class Elevator extends SubsystemBase {
@@ -41,12 +43,18 @@ public class Elevator extends SubsystemBase {
 
         // pid = new PIDTuning(kElevator.kP, kElevator.kI, kElevator.kD, Constants.kTuningMode);
       
-        setpoint = new TunableNumber("Setpoint", 0, Constants.kTuningMode);
+        setpoint = new TunableNumber("Setpoint", RobotState.IDLE.elevatorPos, Constants.kTuningMode);
         ff = new ElevatorFeedforward(0, kElevator.kG, 0);
     }
 
-    public void pid(double value) {
-        setpoint.setDefault(value);
+    public Command pid(double value) {
+        return run(
+            () -> setpoint.setDefault(value)
+        ).until(() -> getError() < 1);
+    }
+
+    public double getError() {
+        return Math.abs(rightElevator.getEncoder().getPosition() - setpoint.get());
     }
 
 
