@@ -103,6 +103,7 @@ public final class Constants {
     public static final double kP = 0.03;
     public static final double kI = 0;
     public static final double kD = 0;
+    public static final double kF = 0;
 
     public static final double kG = 0.0;
     public static final double kS = 0;
@@ -112,9 +113,27 @@ public final class Constants {
     public static final int kSpinMotorID = 24;
     public static final int kPositionMotorID = 21;
 
-    public static final double ManipulatorGearRatio = 160/3; //160:3
-    public static final int Encoder_Channel = 5;
+    public static final double MANIPULATOR_GEAR_RATIO = 160/3; //160:3
+    public static final int ENCODER_CHANNEL = 5;
     public static final double ENCODER_ANGLE_OFFSET = (-74.6);
+
+    public static final int SPIN_CURRENT_LIMIT = 25;
+    public static final int POSITION_CURRENT_LIMIT = 20;
+
+    public static final int REFERENCE_VAL = 0;
+    public static final int TUNE_HIGH_VAL = 100;
+    public static final int TUNE_LOW_VAL = -30;
+
+    public static final double WRIST_SPEED = 1.0;
+    public static final double WRIST_REVERSE_SPEED = WRIST_SPEED*-1;
+    public static final double WRIST_STOP_SPEED = 1.0;
+
+    public static final int ERROR_LIMIT = 1;
+
+    public static final int PID_SLOT = 0;
+    public static final int WRIST_FEED_FORWARD_VELOCITY = 0;
+    public static final int WRIST_FEED_FORWARD_ACCEL = 0;
+
   }
   public enum RobotState {
     IDLE(0, 90, -1.0), 
