@@ -3,7 +3,6 @@ package frc.robot.subsystems;
 import SushiFrcLib.Sensors.gyro.Gyro;
 import SushiFrcLib.Sensors.gyro.Pigeon;
 import SushiFrcLib.Swerve.swerveModules.SwerveModule;
-import SushiFrcLib.Swerve.swerveModules.SwerveModuleFalcon;
 import SushiFrcLib.Swerve.swerveModules.SwerveModuleNeoFalcon;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -52,11 +51,15 @@ public class Swerve extends SubsystemBase {
 
     // Vector is in mps, and rot is in radians per sec
     public void drive(Translation2d vector, double rot) {
-        SmartDashboard.putString("Input: ", vector.getX() + ", " + vector.getY() + ", " + rot);
+        if (kSwerve.SWERVE_TUNNING_MODE) {
+            SmartDashboard.putString("Input: ", vector.getX() + ", " + vector.getY() + ", " + rot);
+        }
 
         vector = vector.rotateBy(gyro.getAngle());
- 
-        SmartDashboard.putString("Input Post Rotate : ", vector.getX() + ", " + vector.getY() + ", " + rot);
+
+        if (kSwerve.SWERVE_TUNNING_MODE) {
+            SmartDashboard.putString("Input Post Rotate : ", vector.getX() + ", " + vector.getY() + ", " + rot);
+        }
 
         SwerveModuleState[] states = kSwerve.SWERVE_KINEMATICS.getStates(vector, rot);
 
@@ -68,7 +71,9 @@ public class Swerve extends SubsystemBase {
         }
 
         for (SwerveModule i : swerveMods) {
-            SmartDashboard.putString("Swerve Module State " + i.moduleNumber, states[i.moduleNumber].speedMetersPerSecond + ", " + states[i.moduleNumber].angle.getDegrees());
+            if (kSwerve.SWERVE_TUNNING_MODE) {
+                SmartDashboard.putString("Swerve Module State " + i.moduleNumber, states[i.moduleNumber].speedMetersPerSecond + ", " + states[i.moduleNumber].angle.getDegrees());
+            }
             i.setDesiredState(states[i.moduleNumber]);
         }
     }
@@ -98,7 +103,9 @@ public class Swerve extends SubsystemBase {
         field.setRobotPose(odom.getPose());
 
         for (SwerveModule i : swerveMods) {
-            SmartDashboard.putNumber("Swerve Module Angle " + i.moduleNumber, i.getAngle());
+            if (kSwerve.SWERVE_TUNNING_MODE) {
+                SmartDashboard.putNumber("Swerve Module Angle " + i.moduleNumber, i.getAngle());
+            }
             i.log();
         }
     }

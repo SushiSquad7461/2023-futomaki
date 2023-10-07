@@ -136,7 +136,7 @@ public final class Constants {
 
   }
   public enum RobotState {
-    IDLE(3, 80, 0.0), 
+    IDLE(3, 80, -10), 
     GROUND_CONE(3.5, 0, -1.0),
     GROUND_CUBE(3, 0, 1.0),
     DOUBLE_CONE(0, 0, 0),

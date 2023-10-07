@@ -33,13 +33,11 @@ public class Manipulator extends SubsystemBase {
     private static Manipulator instance;
 
     public static Manipulator getInstance() {
-        if (instance==null){
+        if (instance == null){
             return new Manipulator();
         }
         return instance;
     }
-
-    // 1 8 for upright cone
 
     private Manipulator() {
         spinMotor = MotorHelper.createSparkMax(kManipulator.kSpinMotorID, MotorType.kBrushless, false,kManipulator.SPIN_CURRENT_LIMIT, IdleMode.kBrake);
@@ -68,12 +66,23 @@ public class Manipulator extends SubsystemBase {
         positionMotor.getEncoder().setVelocityConversionFactor((360 / kManipulator.MANIPULATOR_GEAR_RATIO) / 60);
     }
 
-    public double getError(){
+    public double getAbsoluteError(){
         return Math.abs(absoluteEncoder.getPosition() - positionMotor.getEncoder().getPosition());
     }
 
     public Command runWrist(double speed) {
-        return runOnce(() -> spinMotor.set(speed));
+        return runOnce(() -> {
+            if (speed == -10) {
+                spinMotor.set(speed);
+            }
+        });
+    }
+
+    public Command reverseCurrentWrist() {
+        // Double check if applied output is right shit
+        return runOnce(() -> {
+            spinMotor.set(spinMotor.getAppliedOutput() * -1);
+        });
     }
 
     public Command runWristForward() {
@@ -98,6 +107,10 @@ public class Manipulator extends SubsystemBase {
         return Math.abs(positionMotor.getEncoder().getPosition() - targetTunable.get());
     }
 
+    public double getWristPos() {
+        return positionMotor.getEncoder().getPosition();
+    }
+
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Position", positionMotor.getEncoder().getPosition());
@@ -106,7 +119,7 @@ public class Manipulator extends SubsystemBase {
 
         pid.updatePID(positionMotor);
 
-        if (getError() > kManipulator.ERROR_LIMIT) {
+        if (getAbsoluteError() > kManipulator.ERROR_LIMIT) {
             positionMotor.getEncoder().setPosition(absoluteEncoder.getNormalizedPosition());
         }
 

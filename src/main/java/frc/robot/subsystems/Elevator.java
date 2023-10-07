@@ -57,6 +57,9 @@ public class Elevator extends SubsystemBase {
         return Math.abs(rightElevator.getEncoder().getPosition() - setpoint.get());
     }
 
+    public double getPose() {
+        return rightElevator.getEncoder().getPosition();
+    }
 
     @Override
     public void periodic() {
@@ -68,7 +71,6 @@ public class Elevator extends SubsystemBase {
             0,
             ff.calculate(0)
         );
-
 
         SmartDashboard.putNumber("Current", rightElevator.getOutputCurrent());
         SmartDashboard.putNumber("Left Position", leftElevator.getEncoder().getPosition());
