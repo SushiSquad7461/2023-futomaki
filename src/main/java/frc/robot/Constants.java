@@ -41,7 +41,7 @@ public final class Constants {
     }
 
     public static class kElevator {
-        public static final double kP = 0.15;
+        public static final double kP = 0.1;
         public static final double kI = 0;
         public static final double kD = 0;
         public static final double kG = 0.2; // properly tuned
@@ -136,16 +136,17 @@ public final class Constants {
 
   }
   public enum RobotState {
-    IDLE(0, 90, -1.0), 
-    GROUND_CONE(3, 0, -1.0),
+    IDLE(3, 80, 0.0), 
+    GROUND_CONE(3.5, 0, -1.0),
     GROUND_CUBE(3, 0, 1.0),
     DOUBLE_CONE(0, 0, 0),
-    L1_SCORE_CUBE(0,0,0),
-    L2_SCORE_CUBE(0,0,0),
-    L3_SCORE_CUBE(0,0,0),
-    L1_SCORE_CONE(0,0,0),
-    L2_SCORE_CONE(0,0,0),
-    L3_SCORE_CONE(45,-20,1.0);
+    SINGLE_CONE(65,2,-1.0),
+    L1_CUBE(5,0,0),
+    L2_CUBE(25,0,0),
+    L3_CUBE(45,0,0),
+    L1_CONE(0,0,0),
+    L2_CONE(0,0,0),
+    L3_CONE(45,-20,-0.5);
 
 
     public double elevatorPos;

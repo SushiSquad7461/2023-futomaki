@@ -12,6 +12,9 @@ import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Swerve;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -47,15 +50,21 @@ public class RobotContainer {
     oi.getDriverController().a().onTrue(manipulator.runWristBackward());
     oi.getDriverController().x().onTrue(manipulator.stopWristBackward());
 
-    oi.getDriverController().b().onTrue(setRobotState(RobotState.GROUND_CONE));
+    // oi.getDriverController().b().whileTrue(setRobotState(RobotState.GROUND_CONE)).onFalse(setRobotState(RobotState.IDLE));
+    // oi.getDriverController().x().whileTrue(setRobotState(RobotState.L3_CONE)).onFalse(new SequentialCommandGroup(
+    //   manipulator.runWrist(1.0),
+    //   new WaitCommand(1.0),
+    //   setRobotState(RobotState.IDLE)
+    // ));
   }
 
   private Command setRobotState(Constants.RobotState state) {
-    return new InstantCommand(() -> {
-      elevator.pid(state.elevatorPos);
-      manipulator.runWrist(state.getManipulatorSpeed());
-      manipulator.setAngle(state.wristPos);
-    }, elevator, manipulator);
+    return new SequentialCommandGroup(
+      manipulator.setPosition(RobotState.IDLE.wristPos),
+      elevator.pid(state.elevatorPos),
+      manipulator.setPosition(state.wristPos),
+      manipulator.runWrist(state.getManipulatorSpeed())
+    );
   } 
 
   /**
