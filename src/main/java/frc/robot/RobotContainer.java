@@ -44,8 +44,8 @@ public class RobotContainer {
     );
 
     oi.getDriverController().y().onTrue(manipulator.runWristForward());
-    oi.getDriverController().a().onTrue(manipulator.runWirstBackward());
-    oi.getDriverController().x().onTrue(manipulator.stopWirstBackward());
+    oi.getDriverController().a().onTrue(manipulator.runWristBackward());
+    oi.getDriverController().x().onTrue(manipulator.stopWristBackward());
 
     oi.getDriverController().b().onTrue(setRobotState(RobotState.GROUND_CONE));
   }
