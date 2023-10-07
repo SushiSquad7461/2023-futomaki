@@ -33,8 +33,8 @@ public class Elevator extends SubsystemBase {
     }
 
     private Elevator() {
-        leftElevator = MotorHelper.createSparkMax(22, MotorType.kBrushless, false, 40, IdleMode.kBrake);
-        rightElevator = MotorHelper.createSparkMax(20, MotorType.kBrushless, true, 40, IdleMode.kBrake, Constants.kElevator.kP, Constants.kElevator.kI, Constants.kElevator.kD, 0);
+        leftElevator = MotorHelper.createSparkMax(kElevator.LEFT_MOTOR_ID, MotorType.kBrushless, false, kElevator.CURRENT_LIMIT, IdleMode.kBrake);
+        rightElevator = MotorHelper.createSparkMax(kElevator.RIGHT_MOTOR_ID, MotorType.kBrushless, true, kElevator.CURRENT_LIMIT, IdleMode.kBrake, Constants.kElevator.kP, Constants.kElevator.kI, Constants.kElevator.kD, 0);
 
         leftElevator.follow(rightElevator, true);
 
@@ -63,7 +63,7 @@ public class Elevator extends SubsystemBase {
         // pid.updatePID(rightElavtor);
 
         rightElevator.getPIDController().setReference(
-            setpoint.get() > 50 || setpoint.get() < 0 ? 10 : setpoint.get(),
+            setpoint.get() > kElevator.MAX_POS || setpoint.get() < kElevator.MIN_POS ? 10 : setpoint.get(),
             CANSparkMax.ControlType.kPosition,
             0,
             ff.calculate(0)

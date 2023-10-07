@@ -45,6 +45,15 @@ public final class Constants {
         public static final double kI = 0;
         public static final double kD = 0;
         public static final double kG = 0.2; // properly tuned
+        public static final int LEFT_MOTOR_ID = 22;
+        public static final int RIGHT_MOTOR_ID = 20;
+        public static final int MAX_POS = 50;
+        public static final int MIN_POS = 0;
+        public static final int CURRENT_LIMIT = 40;
+    }
+    
+    public static final class kBuddyClimb {
+      public static final int BUDDY_CLIMB_MOTOR_ID = 30;
     }
 
     public static final class kSwerve {
