@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.PIDConstants;
+
 import SushiFrcLib.Swerve.SDSModules;
 import SushiFrcLib.Swerve.SwerveModuleConstants;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -75,6 +77,20 @@ public final class Constants {
         public static final int ANGLE_CURRENT_LIMIT = 20;
         public static final int DRIVE_CURRENT_LIMIT = 40;
 
+        /* Translation Constants */
+        public static final double TRANSLATION_P = 0;
+        public static final double TRANSLATION_I = 0;
+        public static final double TRANSLATION_D = 0;
+        public static final double TRANSLATION_F = 0;
+        public static final PIDConstants TRANSLATION_CONSTANTS = new PIDConstants(TRANSLATION_P, TRANSLATION_I, TRANSLATION_D, TRANSLATION_F);
+
+        /* Rotation Constants */
+        public static final double ROTATION_P = 0;
+        public static final double ROTATION_I = 0;
+        public static final double ROTATION_D = 0;
+        public static final double ROTATION_F = 0;
+        public static final PIDConstants ROTATION_CONSTANTS = new PIDConstants(ROTATION_P, ROTATION_I, ROTATION_D, ROTATION_F);
+
         /* Angle Motor PID Values */
         public static final double ANGLE_P = 0.005; // 0.3
         public static final double ANGLE_I = 0.0;
@@ -144,6 +160,21 @@ public final class Constants {
     public static final int WRIST_FEED_FORWARD_ACCEL = 0;
 
   }
+
+  public static class kAuto {
+    public static final double CHARGE_SPEED = 2.0; // meters per second
+    public static final double AUTO_BALANCE_WAIT = 0.5;
+
+    public static final double BURM_SIDE_SPEED = 2.0; //mps
+    public static final double CUBE_SCORE_WAIT = 0.3; // sec
+}
+
+  public static class kAutoBalance {
+    public static final double FLATNESS_THRESHOLD_DEGREES = 0.15;
+    public static final double MAX_TILT_CHANGE_DIVIDER = 10; // TODO: Name better
+    public static final double MAX_SPEED = Constants.kSwerve.MAX_SPEED * 0.0035;
+  }
+
   public enum RobotState {
     IDLE(3, 80, -10), 
     GROUND_CONE(3.5, 0, -1.0),

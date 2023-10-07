@@ -1,11 +1,15 @@
 package frc.robot.subsystems;
 
+import javax.sql.rowset.spi.TransactionalWriter;
+
 import SushiFrcLib.Sensors.gyro.Gyro;
 import SushiFrcLib.Sensors.gyro.Pigeon;
 import SushiFrcLib.Swerve.swerveModules.SwerveModule;
 import SushiFrcLib.Swerve.swerveModules.SwerveModuleNeoFalcon;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -31,6 +35,8 @@ public class Swerve extends SubsystemBase {
         return instance;
     }
 
+
+
     private Swerve() {
         gyro = new Pigeon(kPorts.PIGEON_ID, kSwerve.GYRO_INVERSION, kPorts.CANIVORE_NAME);
         gyro.zeroGyro();
@@ -47,6 +53,10 @@ public class Swerve extends SubsystemBase {
 
         field = new Field2d();
         SmartDashboard.putData("Field", field);
+    }
+
+    public void drive(ChassisSpeeds chassisSpeeds) {
+        drive(new Translation2d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond), chassisSpeeds.omegaRadiansPerSecond);
     }
 
     // Vector is in mps, and rot is in radians per sec
@@ -93,6 +103,12 @@ public class Swerve extends SubsystemBase {
 
         return ret;
     }
+
+    public void setOdomPose(Pose2d pose) { odom.setPose(pose); }
+
+    public Pose2d getOdomPose() { return odom.getPose(); }
+
+    public Gyro getGyro() { return gyro; }
 
     @Override
     public void periodic() { 
