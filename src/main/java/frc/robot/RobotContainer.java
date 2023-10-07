@@ -47,8 +47,8 @@ public class RobotContainer {
     );
 
     oi.getDriverController().y().onTrue(manipulator.runWristForward());
-    oi.getDriverController().a().onTrue(manipulator.runWirstBackward());
-    oi.getDriverController().x().onTrue(manipulator.stopWirstBackward());
+    oi.getDriverController().a().onTrue(manipulator.runWristBackward());
+    oi.getDriverController().x().onTrue(manipulator.stopWristBackward());
 
     // oi.getDriverController().b().whileTrue(setRobotState(RobotState.GROUND_CONE)).onFalse(setRobotState(RobotState.IDLE));
     // oi.getDriverController().x().whileTrue(setRobotState(RobotState.L3_CONE)).onFalse(new SequentialCommandGroup(
