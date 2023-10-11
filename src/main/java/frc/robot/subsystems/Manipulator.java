@@ -69,7 +69,7 @@ public class Manipulator extends SubsystemBase {
 
     public Command runWrist(double speed) {
         return runOnce(() -> {
-            if (speed == -10) {
+            if (speed != -10) {
                 spinMotor.set(speed);
             }
         });

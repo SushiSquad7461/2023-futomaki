@@ -23,7 +23,7 @@ import frc.robot.util.SwerveKinematics;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final boolean kTuningMode = true;
+    public static final boolean kTuningMode = false;
     public static final double STICK_DEADBAND = 0.1;
 
     public static final class kOI {
@@ -43,7 +43,7 @@ public final class Constants {
     }
 
     public static class kElevator {
-        public static final double kP = 0.1;
+        public static final double kP = 0.03;
         public static final double kI = 0;
         public static final double kD = 0;
         public static final double kG = 0.2; // properly tuned
@@ -78,17 +78,17 @@ public final class Constants {
         public static final int DRIVE_CURRENT_LIMIT = 40;
 
         /* Translation Constants */
-        public static final double TRANSLATION_P = 0;
-        public static final double TRANSLATION_I = 0;
-        public static final double TRANSLATION_D = 0;
-        public static final double TRANSLATION_F = 0;
+        public static final double TRANSLATION_P = 0.0001;
+        public static final double TRANSLATION_I = 0.0001;
+        public static final double TRANSLATION_D = 0.0001;
+        public static final double TRANSLATION_F = 0.0001;
         public static final PIDConstants TRANSLATION_CONSTANTS = new PIDConstants(TRANSLATION_P, TRANSLATION_I, TRANSLATION_D, TRANSLATION_F);
 
         /* Rotation Constants */
-        public static final double ROTATION_P = 0;
-        public static final double ROTATION_I = 0;
-        public static final double ROTATION_D = 0;
-        public static final double ROTATION_F = 0;
+        public static final double ROTATION_P = 0.0001;
+        public static final double ROTATION_I = 0.0001;
+        public static final double ROTATION_D = 0.0001;
+        public static final double ROTATION_F = 0.0001;
         public static final PIDConstants ROTATION_CONSTANTS = new PIDConstants(ROTATION_P, ROTATION_I, ROTATION_D, ROTATION_F);
 
         /* Angle Motor PID Values */
@@ -176,17 +176,17 @@ public final class Constants {
   }
 
   public enum RobotState {
-    IDLE(3, 80, -10), 
+    IDLE(3, 80, 0), 
     GROUND_CONE(3.5, 0, -1.0),
     GROUND_CUBE(3, 0, 1.0),
     DOUBLE_CONE(0, 0, 0),
-    SINGLE_CONE(65,2,-1.0),
+    SINGLE_CONE(0,65,-1.0),
     L1_CUBE(5,0,0),
     L2_CUBE(25,0,0),
     L3_CUBE(45,0,0),
     L1_CONE(0,0,0),
     L2_CONE(0,0,0),
-    L3_CONE(45,-20,-0.5);
+    L3_CONE(45,-20,0.5);
 
 
     public double elevatorPos;

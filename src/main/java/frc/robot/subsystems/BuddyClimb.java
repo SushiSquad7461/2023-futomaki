@@ -5,7 +5,6 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.OI;
 import frc.robot.Constants.kBuddyClimb;
 
 public class BuddyClimb extends SubsystemBase {
@@ -19,7 +18,7 @@ public class BuddyClimb extends SubsystemBase {
 
     public void setSpeed(double speed) {
         if (speed > 0) {
-            anujIsASmallBitch.setSmartCurrentLimit(5);
+            anujIsASmallBitch.setSmartCurrentLimit(1);
         } else {
             anujIsASmallBitch.setSmartCurrentLimit(50);
         }
@@ -28,7 +27,6 @@ public class BuddyClimb extends SubsystemBase {
 
     @Override
     public void periodic() {
-        setSpeed(OI.getInstance().getOperatorController().getLeftY() * 0.4);
     }
 
 }

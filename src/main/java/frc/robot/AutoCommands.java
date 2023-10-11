@@ -150,5 +150,7 @@ public class AutoCommands {
         return swerveAutoBuilder.fullAuto(PathPlanner.loadPathGroup(path, speed, kSwerve.MAX_ACCELERATION));
     }
 
-
+    public Command getAuto() {
+        return chooser.getSelected();
+    }
 }
