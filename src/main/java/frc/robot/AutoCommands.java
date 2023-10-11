@@ -22,20 +22,10 @@ import frc.robot.subsystems.Swerve;
 
 public class AutoCommands {
     private SwerveAutoBuilder swerveAutoBuilder;
-
-    private Manipulator manipulator;
-    private Elevator elevator;
-    private Swerve swerve;
     private SendableChooser<Command> chooser;
     private HashMap<String, Command> eventMap;
 
-
-
     public AutoCommands(Swerve swerve, Manipulator manipulator, Elevator elevator) {
-        this.swerve = swerve;
-        this.manipulator = manipulator;
-        this.elevator = elevator;
-        
         eventMap = new HashMap<String, Command>();
         eventMap.put("getCube", CommandFactory.setRobotState(manipulator, elevator, RobotState.GROUND_CUBE));
         eventMap.put("getCone", CommandFactory.setRobotState(manipulator, elevator, RobotState.GROUND_CONE));
@@ -43,7 +33,6 @@ public class AutoCommands {
         eventMap.put("scoreCube", CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CUBE));
         eventMap.put("idle", CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
         eventMap.put("autoBalance", new AutoBalance());
-
 
         swerveAutoBuilder = new SwerveAutoBuilder(
             swerve::getOdomPose, 
@@ -54,8 +43,6 @@ public class AutoCommands {
             eventMap,
             swerve
         );
-
-        
 
         chooser = new SendableChooser<>();
         

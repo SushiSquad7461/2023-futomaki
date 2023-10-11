@@ -29,63 +29,36 @@ public class RobotContainer {
   private final Manipulator manipulator;
   private final Elevator elevator;
   private final Swerve swerve;
-  // private final AutoCommands autos;
+
   private final SendableChooser<Command> scoreChooser;
-  // private BuddyClimb buddyClimb;
 
   public RobotContainer() {                     
     oi = OI.getInstance();
     elevator = Elevator.getInstance();
     manipulator = Manipulator.getInstance();
     swerve = Swerve.getInstance();
+
     scoreChooser = new SendableChooser<Command>();
-    // autos = new AutoCommands(swerve, manipulator, elevator);
+    setupScoreChooser();
 
     configureBindings();
-
-    // buddyClimb = new BuddyClimb();
   }
 
   private void configureBindings() {
-
-    scoreChooser.addOption("L3 Cone", CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CONE));
-    scoreChooser.addOption("L3 Cube", CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CUBE));
-    scoreChooser.addOption("L2 Cone", CommandFactory.setRobotState(manipulator, elevator, RobotState.L2_CONE));
-    scoreChooser.addOption("L2 Cube", CommandFactory.setRobotState(manipulator, elevator, RobotState.L2_CUBE));
-    scoreChooser.addOption("L1 Cone", CommandFactory.setRobotState(manipulator, elevator, RobotState.L1_CONE));
-    scoreChooser.addOption("L1 Cube", CommandFactory.setRobotState(manipulator, elevator, RobotState.L1_CUBE));
-    SmartDashboard.putData("Score Selecter", scoreChooser);
-
-    Swerve.getInstance().setDefaultCommand(
+    swerve.setDefaultCommand(
       new TeleopSwerveDrive(
           Swerve.getInstance(), 
           () -> oi.getDriveTrainTranslationX(),
           () -> oi.getDriveTrainTranslationY(),
-          () -> oi.getDriveTrainRotation()
+          () -> oi.getDriveTrainRotation(),
+          () -> elevator.getPose() > 20 ? 0.2 : 1.0
       )
     );
-
-    // Their are 5 driver commands
-    // Ground cone pickup
-    // Ground cube pickup
-    // Single Suby pickup cone
-    // Double Suby pickup cone
-    // Score
-
-    // oi.getDriverController().y().onTrue(manipulator.runWristForward());
-    // oi.getDriverController().a().onTrue(manipulator.runWristBackward());
-    // oi.getDriverController().x().onTrue(manipulator.stopWristBackward());
 
     oi.getDriverController().b().onTrue(CommandFactory.setRobotState(manipulator, elevator, RobotState.GROUND_CONE)).onFalse(CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
     oi.getDriverController().a().onTrue(CommandFactory.setRobotState(manipulator, elevator, RobotState.GROUND_CUBE)).onFalse(CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
     oi.getDriverController().x().onTrue(CommandFactory.setRobotState(manipulator, elevator, RobotState.SINGLE_CONE)).onFalse(CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
     oi.getDriverController().y().onTrue(CommandFactory.setRobotState(manipulator, elevator, RobotState.DOUBLE_CONE)).onFalse(CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
-    // oi.getDriverController().leftBumper().onTrue(CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CONE)).onFalse(CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
-    // oi.getDriverController().rightBumper().onTrue(CommandFactory.setRobotState(manipulator, elevator, RobotState.L2_CONE)).onFalse(CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
-
-
-    // oi.getOperatorController().a().whileTrue(new InstantCommand(() -> {buddyClimb.setSpeed(-1);})).onFalse(new InstantCommand(() -> {buddyClimb.setSpeed(0);}));
-    // oi.getOperatorController().b().whileTrue(new InstantCommand(() -> {buddyClimb.setSpeed(0.1);})).onFalse(new InstantCommand(() -> {buddyClimb.setSpeed(0);}));
 
     oi.getDriverController().povUp().onTrue(new InstantCommand(() -> scoreChooser.getSelected().schedule())).onFalse(new SequentialCommandGroup(
       manipulator.reverseCurrentWrist(),
@@ -94,14 +67,15 @@ public class RobotContainer {
     ));
   }
 
-  
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    return null;
+  private void setupScoreChooser() {
+    scoreChooser.addOption("L3 Cone", CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CONE));
+    scoreChooser.addOption("L3 Cube", CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CUBE));
+    scoreChooser.addOption("L2 Cone", CommandFactory.setRobotState(manipulator, elevator, RobotState.L2_CONE));
+    scoreChooser.addOption("L2 Cube", CommandFactory.setRobotState(manipulator, elevator, RobotState.L2_CUBE));
+    scoreChooser.addOption("L1 Cone", CommandFactory.setRobotState(manipulator, elevator, RobotState.L1_CONE));
+    scoreChooser.addOption("L1 Cube", CommandFactory.setRobotState(manipulator, elevator, RobotState.L1_CUBE));
+    SmartDashboard.putData("Score Selecter", scoreChooser);
   }
+
+  public Command getAutonomousCommand() { return null; }
 }

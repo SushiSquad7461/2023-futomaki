@@ -16,12 +16,31 @@ import java.util.function.Supplier;
  */
 public class TeleopSwerveDrive extends CommandBase {
     private final Swerve swerve;
+
     private final Supplier<Double> xaxisSupplier; 
     private final Supplier<Double> yaxisSupplier;
     private final Supplier<Double> rotSupplier;
+    private final Supplier<Double> speedMultiplier;
 
     private Boolean isRedAlliance;
     private NetworkTable table;
+
+    /**
+     * Pass in defualt speed multiplier of 1.0
+     */
+    public TeleopSwerveDrive(Swerve swerve,
+        Supplier<Double> xaxisSupplier, 
+        Supplier<Double> yaxisSupplier, 
+        Supplier<Double> rotSupplier
+    ) {
+        this(
+            swerve,
+            xaxisSupplier,
+            yaxisSupplier,
+            rotSupplier,
+            () -> 1.0
+        );
+    }
 
     /**
      * Set swerve subsytem, controlers, axis's, and other swerve paramaters.
@@ -29,14 +48,16 @@ public class TeleopSwerveDrive extends CommandBase {
     public TeleopSwerveDrive(Swerve swerve,
         Supplier<Double> xaxisSupplier, 
         Supplier<Double> yaxisSupplier, 
-        Supplier<Double> rotSupplier
+        Supplier<Double> rotSupplier,
+        Supplier<Double> speedMultiplier
     ) {
         this.swerve = swerve;
 
         this.xaxisSupplier = xaxisSupplier;
         this.yaxisSupplier = yaxisSupplier;
         this.rotSupplier = rotSupplier;
-
+        this.speedMultiplier = speedMultiplier;
+        
         table = NetworkTableInstance.getDefault().getTable("FMSInfo");
         isRedAlliance = table.getEntry("IsRedAlliance").getBoolean(true);
 
@@ -46,6 +67,7 @@ public class TeleopSwerveDrive extends CommandBase {
     @Override
     public void execute() {
         isRedAlliance = table.getEntry("IsRedAlliance").getBoolean(true);
+
         double forwardBack = yaxisSupplier.get() * (isRedAlliance ? -1 : 1);
         double leftRight = -xaxisSupplier.get() * (isRedAlliance ? -1 : 1);
         double rot = rotSupplier.get();

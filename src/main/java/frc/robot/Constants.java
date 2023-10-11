@@ -47,10 +47,14 @@ public final class Constants {
         public static final double kI = 0;
         public static final double kD = 0;
         public static final double kG = 0.2; // properly tuned
+
         public static final int LEFT_MOTOR_ID = 22;
         public static final int RIGHT_MOTOR_ID = 20;
+
         public static final int MAX_POS = 50;
         public static final int MIN_POS = 0;
+        public static final double DEFUALT_VAL = RobotState.IDLE.elevatorPos;
+
         public static final int CURRENT_LIMIT = 40;
     }
     
@@ -131,9 +135,6 @@ public final class Constants {
     public static final double kF = 0;
 
     public static final double kG = 0.0;
-    public static final double kS = 0;
-    public static final double kA = 0;
-    public static final double kV = 0;
 
     public static final int kSpinMotorID = 24;
     public static final int kPositionMotorID = 21;
@@ -145,20 +146,15 @@ public final class Constants {
     public static final int SPIN_CURRENT_LIMIT = 25;
     public static final int POSITION_CURRENT_LIMIT = 20;
 
-    public static final int REFERENCE_VAL = 0;
-    public static final int TUNE_HIGH_VAL = 100;
-    public static final int TUNE_LOW_VAL = -30;
+    public static final double DEFUALT_VAL = RobotState.IDLE.wristPos;
+    public static final double TUNE_HIGH_VAL = 100;
+    public static final double TUNE_LOW_VAL = -30;
 
     public static final double WRIST_SPEED = 1.0;
     public static final double WRIST_REVERSE_SPEED = WRIST_SPEED*-1;
     public static final double WRIST_STOP_SPEED = 1.0;
 
     public static final int ERROR_LIMIT = 1;
-
-    public static final int PID_SLOT = 0;
-    public static final int WRIST_FEED_FORWARD_VELOCITY = 0;
-    public static final int WRIST_FEED_FORWARD_ACCEL = 0;
-
   }
 
   public static class kAuto {
@@ -191,16 +187,18 @@ public final class Constants {
 
     public double elevatorPos;
     public double wristPos;
-    private double manipulatorSpeed;
+    public double manipulatorSpeed;
+    public boolean changeSpeed;
 
     private RobotState(double elevatorPos, double wristPos, double manipulatorSpeed) {
+      this(elevatorPos, wristPos, manipulatorSpeed, true);
+    }
+
+    private RobotState(double elevatorPos, double wristPos, double manipulatorSpeed, boolean changeSpeed) {
         this.elevatorPos = elevatorPos;
         this.wristPos = wristPos;
         this.manipulatorSpeed = manipulatorSpeed;
+        this.changeSpeed = changeSpeed; 
     }
-
-    public double getElevatorPos() {return elevatorPos; }
-    public double getWristPos() {return wristPos; }
-    public double getManipulatorSpeed() {return manipulatorSpeed;}
   }
 }

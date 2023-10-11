@@ -9,8 +9,6 @@ import frc.robot.Constants.kOI;
 public class OI {
     private CommandXboxController driverController;
     private CommandXboxController operatorController;
-    private boolean isElevatorUp = false;
-
 
     private static OI instance;
 
@@ -29,21 +27,16 @@ public class OI {
         operatorController = new CommandXboxController(kOI.OPERATOR_PORT);
 
     }
-
-    public void setElevator(boolean isUp) {
-        isElevatorUp = isUp;
-    }
-
     public double getDriveTrainRotation() {
         return getRawAxis(kOI.DRIVE_ROTATE);
     }
 
     public double getDriveTrainTranslationY() {
-        return isElevatorUp ?  (getRawAxis(kOI.DRIVE_TRANSLATION_Y) * 0.2) : (getRawAxis(kOI.DRIVE_TRANSLATION_Y));
+        return getRawAxis(kOI.DRIVE_TRANSLATION_Y);
     }
 
     public double getDriveTrainTranslationX() {
-        return isElevatorUp ? (getRawAxis(kOI.DRIVE_TRANSLATION_X) * 0.2 ) : (getRawAxis(kOI.DRIVE_TRANSLATION_X));
+        return getRawAxis(kOI.DRIVE_TRANSLATION_X);
     }
 
     private double getRawAxis(int id) {
