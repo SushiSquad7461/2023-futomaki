@@ -140,7 +140,7 @@ public final class Constants {
 
     public static final double MANIPULATOR_GEAR_RATIO = 160/3; //160:3
     public static final int ENCODER_CHANNEL = 5;
-    public static final double ENCODER_ANGLE_OFFSET = (-74.6);
+    public static final double ENCODER_ANGLE_OFFSET = -77.100446;
 
     public static final int SPIN_CURRENT_LIMIT = 25;
     public static final int POSITION_CURRENT_LIMIT = 20;

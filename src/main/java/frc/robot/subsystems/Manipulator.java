@@ -19,7 +19,7 @@ import frc.robot.Constants.kManipulator;
 public class Manipulator extends SubsystemBase {
     private final CANSparkMax spinMotor;
     private final CANSparkMax positionMotor;
-    private final PIDTuning pid;
+    // private final PIDTuning pid;
 
 
     private final ArmFeedforward wristFeedforward;
@@ -40,7 +40,7 @@ public class Manipulator extends SubsystemBase {
         spinMotor = MotorHelper.createSparkMax(kManipulator.kSpinMotorID, MotorType.kBrushless, false,kManipulator.SPIN_CURRENT_LIMIT, IdleMode.kBrake);
         positionMotor = MotorHelper.createSparkMax(kManipulator.kPositionMotorID, MotorType.kBrushless, false, kManipulator.POSITION_CURRENT_LIMIT, IdleMode.kBrake, kManipulator.kP, kManipulator.kI, kManipulator.kD, kManipulator.kF);
 
-        pid = new PIDTuning(kManipulator.kP, kManipulator.kI, kManipulator.kD, Constants.kTuningMode);
+        // pid = new PIDTuning(kManipulator.kP, kManipulator.kI, kManipulator.kD, Constants.kTuningMode);
 
         wristFeedforward = new ArmFeedforward(kManipulator.kS, kManipulator.kG, kManipulator.kV, kManipulator.kA); 
         absoluteEncoder = new AbsoluteEncoder(kManipulator.ENCODER_CHANNEL, kManipulator.ENCODER_ANGLE_OFFSET);
@@ -64,14 +64,14 @@ public class Manipulator extends SubsystemBase {
     }
 
     public double getAbsoluteError(){
-        return Math.abs(absoluteEncoder.getPosition() - positionMotor.getEncoder().getPosition());
+        return Math.abs(absoluteEncoder.getNormalizedPosition() - positionMotor.getEncoder().getPosition());
     }
 
     public Command runWrist(double speed) {
         return runOnce(() -> {
-            if (speed != -10) {
+            // if (speed != -10) {
                 spinMotor.set(speed);
-            }
+            // }
         });
     }
 
@@ -110,15 +110,16 @@ public class Manipulator extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Position", positionMotor.getEncoder().getPosition());
+        SmartDashboard.putNumber("Wrist Position", positionMotor.getEncoder().getPosition());
+        SmartDashboard.putNumber("Wrist Setpoint", targetTunable.get());
         SmartDashboard.putNumber("Absolute Position", absoluteEncoder.getPosition());
         SmartDashboard.putNumber("Manipulator Current", spinMotor.getOutputCurrent());
 
-        pid.updatePID(positionMotor);
+        // pid.updatePID(positionMotor);
 
-        if (getAbsoluteError() > kManipulator.ERROR_LIMIT) {
-            positionMotor.getEncoder().setPosition(absoluteEncoder.getNormalizedPosition());
-        }
+        // if (getAbsoluteError() > kManipulator.ERROR_LIMIT) { // figure out why cmomenting this out is breaking
+        //     positionMotor.getEncoder().setPosition(absoluteEncoder.getNormalizedPosition());
+        // }
 
         positionMotor.getPIDController().setReference(
             (targetTunable.get() > kManipulator.TUNE_HIGH_VAL || targetTunable.get() < kManipulator.TUNE_LOW_VAL) ? kManipulator.REFERENCE_VAL: targetTunable.get(), 

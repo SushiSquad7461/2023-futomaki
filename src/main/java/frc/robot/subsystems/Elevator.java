@@ -72,7 +72,8 @@ public class Elevator extends SubsystemBase {
         );
 
         SmartDashboard.putNumber("Current", rightElevator.getOutputCurrent());
-        SmartDashboard.putNumber("Left Position", leftElevator.getEncoder().getPosition());
-        SmartDashboard.putNumber("Right Position", rightElevator.getEncoder().getPosition());
+        SmartDashboard.putNumber("Elevator Position", rightElevator.getEncoder().getPosition());
+        SmartDashboard.putNumber("Elevator Setpoint", setpoint.get());
+
     }
 }
