@@ -43,10 +43,10 @@ public final class Constants {
     }
 
     public static class kElevator {
-        public static final double kP = 0.03;
+        public static final double kP = 0.03; // 0.03
         public static final double kI = 0;
         public static final double kD = 0;
-        public static final double kG = 0.2; // properly tuned
+        public static final double kG = 0.0; // properly tuned
 
         public static final int LEFT_MOTOR_ID = 22;
         public static final int RIGHT_MOTOR_ID = 20;
@@ -129,7 +129,7 @@ public final class Constants {
     }
 
   public static class kManipulator {
-    public static final double kP = 0.03;
+    public static final double kP = 0.02;
     public static final double kI = 0;
     public static final double kD = 0;
     public static final double kF = 0;
@@ -144,7 +144,7 @@ public final class Constants {
     public static final double ENCODER_ANGLE_OFFSET = -77.100446;
 
     public static final int SPIN_CURRENT_LIMIT = 25;
-    public static final int POSITION_CURRENT_LIMIT = 20;
+    public static final int POSITION_CURRENT_LIMIT = 40;
 
     public static final double DEFUALT_VAL = RobotState.IDLE.wristPos;
     public static final double TUNE_HIGH_VAL = 100;
@@ -177,12 +177,12 @@ public final class Constants {
     GROUND_CUBE(3, 0, 1.0),
     DOUBLE_CONE(0, 0, 0),
     SINGLE_CONE(0,65,-1.0),
-    L1_CUBE(5,0,0),
-    L2_CUBE(25,0,0),
-    L3_CUBE(45,0,0),
-    L1_CONE(0,0,0),
-    L2_CONE(0,0,0),
-    L3_CONE(45,-20,0.5);
+    L1_CUBE(5,0,0.5),
+    L2_CUBE(25,0,0.5),
+    L3_CUBE(45,10,0.5),
+    L1_CONE(0,0,-1.0),
+    L2_CONE(43,-80,-1.0),
+    L3_CONE(45,-15,-1.0);
 
 
     public double elevatorPos;

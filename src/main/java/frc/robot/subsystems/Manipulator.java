@@ -28,6 +28,7 @@ public class Manipulator extends SubsystemBase {
     private final TunableNumber targetTunable;
 
     private static Manipulator instance;
+    private RobotState currState;
 
     public static Manipulator getInstance() {
         if (instance == null){
@@ -51,12 +52,16 @@ public class Manipulator extends SubsystemBase {
         positionMotor.getEncoder().setVelocityConversionFactor((360 / kManipulator.MANIPULATOR_GEAR_RATIO) / 60);
 
         targetTunable = new TunableNumber("Wrist target", kManipulator.DEFUALT_VAL, Constants.kTuningMode);
+        currState = RobotState.IDLE;
     } 
     
     public Command setPosition(RobotState state) {
-        return runOnce(
-            () -> targetTunable.setDefault(state.elevatorPos) 
-        ).until(() -> getError() < 1);
+        return run(
+            () ->  {
+                System.out.println("Setting new manu state: " + state.toString());
+                targetTunable.setDefault(state.wristPos);
+            }
+        ).until(() -> getError(state.wristPos) < 5);
     }
 
     public double getAbsoluteError(){
@@ -66,18 +71,19 @@ public class Manipulator extends SubsystemBase {
     public Command runWrist(RobotState state) {
         return runOnce(() -> {
             spinMotor.set(state.manipulatorSpeed);
+            currState = state;
          });
     }
 
     public Command reverseCurrentWrist() {
         // Double check if applied output is right shit
         return runOnce(() -> {
-            spinMotor.set(spinMotor.getAppliedOutput() * -1);
+            spinMotor.set(currState.manipulatorSpeed * -1);
         });
     }
 
-    public double getError() {
-        return Math.abs(getWristPos() - targetTunable.get());
+    public double getError(double setpoint) {
+        return Math.abs(getWristPos() - setpoint);
     }
 
     public double getWristPos() {
@@ -104,7 +110,8 @@ public class Manipulator extends SubsystemBase {
         }
 
         positionMotor.getPIDController().setReference(
-            (targetTunable.get() > kManipulator.TUNE_HIGH_VAL || targetTunable.get() < kManipulator.TUNE_LOW_VAL) ? kManipulator.DEFUALT_VAL: targetTunable.get(), 
+            // (targetTunable.get() > kManipulator.TUNE_HIGH_VAL || targetTunable.get() < kManipulator.TUNE_LOW_VAL) ? kManipulator.DEFUALT_VAL: targetTunable.get(), 
+            targetTunable.get(),
             ControlType.kPosition, 
             0,
             wristFeedforward.calculate(Math.toRadians(positionMotor.getEncoder().getPosition()), 0.0)

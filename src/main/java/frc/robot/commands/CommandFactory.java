@@ -11,7 +11,7 @@ import frc.robot.subsystems.Manipulator;
 public class CommandFactory {
     public static Command setRobotState(Manipulator manipulator, Elevator elevator, RobotState state) {
       return new InstantCommand(() -> {
-          boolean moveElevatorFirst = state.elevatorPos > elevator.getPose() && state.wristPos < manipulator.getWristPos();
+          boolean moveElevatorFirst =  state.elevatorPos > elevator.getPose() && state.wristPos < manipulator.getWristPos();
 
           new SequentialCommandGroup(
             moveElevatorFirst ? elevator.moveElevator(state) : manipulator.setPosition(state),

@@ -34,31 +34,32 @@ public class Elevator extends SubsystemBase {
     }
 
     private Elevator() {
+        ff = new ElevatorFeedforward(0, kElevator.kG, 0);
+
         leftElevator = MotorHelper.createSparkMax(kElevator.LEFT_MOTOR_ID, MotorType.kBrushless, false, kElevator.CURRENT_LIMIT, IdleMode.kBrake);
-        rightElevator = MotorHelper.createSparkMax(kElevator.RIGHT_MOTOR_ID, MotorType.kBrushless, true, kElevator.CURRENT_LIMIT, IdleMode.kBrake, Constants.kElevator.kP, Constants.kElevator.kI, Constants.kElevator.kD, 0);
+        rightElevator = MotorHelper.createSparkMax(kElevator.RIGHT_MOTOR_ID, MotorType.kBrushless, true, kElevator.CURRENT_LIMIT, IdleMode.kBrake, Constants.kElevator.kP, Constants.kElevator.kI, Constants.kElevator.kD, 0.0);
 
         leftElevator.follow(rightElevator, true);
 
         // Setup Motion Majic, this is used to reduce jerk in the elevator ???
-        rightElevator.getPIDController().setSmartMotionMaxVelocity(4000, 0); // Velocity is in RPM
-        rightElevator.getPIDController().setSmartMotionMaxAccel(100, 0); // Acel in RPM^2
+        // rightElevator.getPIDController().setSmartMotionMaxVelocity(100, 0); // Velocity is in RPM
+        // rightElevator.getPIDController().setSmartMotionMaxAccel(10, 0); // Acel in RPM^2
 
         if (Constants.kTuningMode) {
             pid = new PIDTuning("Elevator", kElevator.kP, kElevator.kI, kElevator.kD, Constants.kTuningMode);
         }
       
         setpoint = new TunableNumber("Elavator Setpoint", kElevator.DEFUALT_VAL, Constants.kTuningMode);
-        ff = new ElevatorFeedforward(0, kElevator.kG, 0);
     }
 
     public Command moveElevator(RobotState state) {
         return run(
             () -> setpoint.setDefault(state.elevatorPos)
-        ).until(() -> getError() < 1);
+        ).until(() -> getError(state.elevatorPos) < 5);
     }
 
-    public double getError() {
-        return Math.abs(rightElevator.getEncoder().getPosition() - setpoint.get());
+    public double getError(double setpoint) {
+        return Math.abs(rightElevator.getEncoder().getPosition() - setpoint);
     }
 
     public double getPose() {
@@ -77,9 +78,9 @@ public class Elevator extends SubsystemBase {
 
         rightElevator.getPIDController().setReference(
             setpoint.get() > kElevator.MAX_POS || setpoint.get() < kElevator.MIN_POS ? kElevator.DEFUALT_VAL : setpoint.get(),
-            CANSparkMax.ControlType.kSmartMotion,
+            CANSparkMax.ControlType.kPosition,
             0,
-            ff.calculate(0)
+            ff.calculate(0.0)
         );
     }
 }
