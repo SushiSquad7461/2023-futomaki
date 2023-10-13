@@ -1,10 +1,8 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
 import SushiFrcLib.Motor.MotorHelper;
 import SushiFrcLib.SmartDashboard.PIDTuning;
 import SushiFrcLib.SmartDashboard.TunableNumber;
@@ -20,12 +18,14 @@ public class Elevator extends SubsystemBase {
     private final CANSparkMax leftElevator;
     private final CANSparkMax rightElevator;
 
-    // private final PIDTuning pid;
+    private PIDTuning pid;
 
     private final TunableNumber setpoint;
     private final ElevatorFeedforward ff;
 
     private static Elevator instance;
+
+    private boolean resetElevator;
 
     public static Elevator getInstance() {
         if (instance == null) {
@@ -36,42 +36,77 @@ public class Elevator extends SubsystemBase {
     }
 
     private Elevator() {
-        leftElevator = MotorHelper.createSparkMax(22, MotorType.kBrushless, false, 40, IdleMode.kBrake);
-        rightElevator = MotorHelper.createSparkMax(20, MotorType.kBrushless, true, 40, IdleMode.kBrake, Constants.kElevator.kP, Constants.kElevator.kI, Constants.kElevator.kD, 0);
+        ff = new ElevatorFeedforward(0, kElevator.kG, 0);
+
+        leftElevator = MotorHelper.createSparkMax(kElevator.LEFT_MOTOR_ID, MotorType.kBrushless, false, kElevator.CURRENT_LIMIT, IdleMode.kBrake);
+        rightElevator = MotorHelper.createSparkMax(kElevator.RIGHT_MOTOR_ID, MotorType.kBrushless, true, kElevator.CURRENT_LIMIT, IdleMode.kBrake, Constants.kElevator.kP, Constants.kElevator.kI, Constants.kElevator.kD, 0.0);
 
         leftElevator.follow(rightElevator, true);
 
-        // pid = new PIDTuning(kElevator.kP, kElevator.kI, kElevator.kD, Constants.kTuningMode);
+        resetElevator = false;
+
+        // Setup Motion Majic, this is used to reduce jerk in the elevator ???
+        // rightElevator.getPIDController().setSmartMotionMaxVelocity(100, 0); // Velocity is in RPM
+        // rightElevator.getPIDController().setSmartMotionMaxAccel(10, 0); // Acel in RPM^2
+
+        if (Constants.kTuningMode) {
+            pid = new PIDTuning("Elevator", kElevator.kP, kElevator.kI, kElevator.kD, Constants.kTuningMode);
+        }
       
-        setpoint = new TunableNumber("Setpoint", RobotState.IDLE.elevatorPos, Constants.kTuningMode);
-        ff = new ElevatorFeedforward(0, kElevator.kG, 0);
+        setpoint = new TunableNumber("Elavator Setpoint", kElevator.DEFUALT_VAL, Constants.kTuningMode);
     }
 
-    public Command pid(double value) {
+    public Command moveElevator(RobotState state) {
         return run(
-            () -> setpoint.setDefault(value)
-        ).until(() -> getError() < 1);
+            () -> setpoint.setDefault(state.elevatorPos)
+        ).until(() -> getError(state.elevatorPos) < 5);
     }
 
-    public double getError() {
-        return Math.abs(rightElevator.getEncoder().getPosition() - setpoint.get());
+    public Command resetElevatorPoseStart() {
+        return runOnce(
+            () -> {
+                rightElevator.set(-0.1);
+                resetElevator = true;
+            }
+        );
     }
 
+    public Command resetElevatorPoseEnd() {
+        return runOnce(
+            () -> {
+                rightElevator.set(0.0);
+                rightElevator.getEncoder().setPosition(0.0);
+                resetElevator = false;
+            }
+        );
+    }
+
+    public double getError(double setpoint) {
+        return Math.abs(rightElevator.getEncoder().getPosition() - setpoint);
+    }
+
+    public double getPose() {
+        return rightElevator.getEncoder().getPosition();
+    }
 
     @Override
     public void periodic() {
-        // pid.updatePID(rightElavtor);
+        SmartDashboard.putNumber("Eleavator Current", rightElevator.getOutputCurrent());
+        SmartDashboard.putNumber("Elevator Position", rightElevator.getEncoder().getPosition());
+        SmartDashboard.putNumber("Elevator Setpoint", setpoint.get());
 
-        rightElevator.getPIDController().setReference(
-            setpoint.get() > 50 || setpoint.get() < 0 ? 10 : setpoint.get(),
+        if (Constants.kTuningMode) {
+            pid.updatePID(rightElevator);
+        }
+
+
+        if (!resetElevator) {
+          rightElevator.getPIDController().setReference(
+            setpoint.get() > kElevator.MAX_POS || setpoint.get() < kElevator.MIN_POS ? kElevator.DEFUALT_VAL : setpoint.get(),
             CANSparkMax.ControlType.kPosition,
             0,
-            ff.calculate(0)
-        );
-
-
-        SmartDashboard.putNumber("Current", rightElevator.getOutputCurrent());
-        SmartDashboard.putNumber("Left Position", leftElevator.getEncoder().getPosition());
-        SmartDashboard.putNumber("Right Position", rightElevator.getEncoder().getPosition());
+            ff.calculate(0.0)
+          );
+        }
     }
 }

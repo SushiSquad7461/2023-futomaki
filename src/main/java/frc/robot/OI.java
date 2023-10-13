@@ -27,17 +27,16 @@ public class OI {
         operatorController = new CommandXboxController(kOI.OPERATOR_PORT);
 
     }
-
     public double getDriveTrainRotation() {
         return getRawAxis(kOI.DRIVE_ROTATE);
     }
 
     public double getDriveTrainTranslationY() {
-        return (getRawAxis(kOI.DRIVE_TRANSLATION_Y));
+        return getRawAxis(kOI.DRIVE_TRANSLATION_Y);
     }
 
     public double getDriveTrainTranslationX() {
-        return(getRawAxis(kOI.DRIVE_TRANSLATION_X));
+        return getRawAxis(kOI.DRIVE_TRANSLATION_X);
     }
 
     private double getRawAxis(int id) {

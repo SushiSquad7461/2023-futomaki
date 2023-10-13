@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.PIDConstants;
+
 import SushiFrcLib.Swerve.SDSModules;
 import SushiFrcLib.Swerve.SwerveModuleConstants;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -21,7 +23,7 @@ import frc.robot.util.SwerveKinematics;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final boolean kTuningMode = true;
+    public static final boolean kTuningMode = false;
     public static final double STICK_DEADBAND = 0.1;
 
     public static final class kOI {
@@ -41,10 +43,23 @@ public final class Constants {
     }
 
     public static class kElevator {
-        public static final double kP = 0.1;
+        public static final double kP = 0.03; // 0.03
         public static final double kI = 0;
         public static final double kD = 0;
-        public static final double kG = 0.2; // properly tuned
+        public static final double kG = 0.0; // properly tuned
+
+        public static final int LEFT_MOTOR_ID = 22;
+        public static final int RIGHT_MOTOR_ID = 20;
+
+        public static final int MAX_POS = 50;
+        public static final int MIN_POS = 0;
+        public static final double DEFUALT_VAL = RobotState.IDLE.elevatorPos;
+
+        public static final int CURRENT_LIMIT = 40;
+    }
+    
+    public static final class kBuddyClimb {
+      public static final int BUDDY_CLIMB_MOTOR_ID = 30;
     }
 
     public static final class kSwerve {
@@ -64,7 +79,21 @@ public final class Constants {
 
         /* Swerve Current Limiting */
         public static final int ANGLE_CURRENT_LIMIT = 20;
-        public static final int DRIVE_CURRENT_LIMIT = 40;
+        public static final int DRIVE_CURRENT_LIMIT = 80;
+
+        /* Translation Constants */
+        public static final double TRANSLATION_P = 0.0001;
+        public static final double TRANSLATION_I = 0.0001;
+        public static final double TRANSLATION_D = 0.0001;
+        public static final double TRANSLATION_F = 0.0001;
+        public static final PIDConstants TRANSLATION_CONSTANTS = new PIDConstants(TRANSLATION_P, TRANSLATION_I, TRANSLATION_D, TRANSLATION_F);
+
+        /* Rotation Constants */
+        public static final double ROTATION_P = 0.0001;
+        public static final double ROTATION_I = 0.0001;
+        public static final double ROTATION_D = 0.0001;
+        public static final double ROTATION_F = 0.0001;
+        public static final PIDConstants ROTATION_CONSTANTS = new PIDConstants(ROTATION_P, ROTATION_I, ROTATION_D, ROTATION_F);
 
         /* Angle Motor PID Values */
         public static final double ANGLE_P = 0.005; // 0.3
@@ -100,67 +129,76 @@ public final class Constants {
     }
 
   public static class kManipulator {
-    public static final double kP = 0.03;
+    public static final double kP = 0.02;
     public static final double kI = 0;
     public static final double kD = 0;
     public static final double kF = 0;
 
     public static final double kG = 0.0;
-    public static final double kS = 0;
-    public static final double kA = 0;
-    public static final double kV = 0;
 
     public static final int kSpinMotorID = 24;
     public static final int kPositionMotorID = 21;
 
     public static final double MANIPULATOR_GEAR_RATIO = 160/3; //160:3
     public static final int ENCODER_CHANNEL = 5;
-    public static final double ENCODER_ANGLE_OFFSET = (-74.6);
+    public static final double ENCODER_ANGLE_OFFSET = -77.100446;
 
     public static final int SPIN_CURRENT_LIMIT = 25;
-    public static final int POSITION_CURRENT_LIMIT = 20;
+    public static final int POSITION_CURRENT_LIMIT = 40;
 
-    public static final int REFERENCE_VAL = 0;
-    public static final int TUNE_HIGH_VAL = 100;
-    public static final int TUNE_LOW_VAL = -30;
+    public static final double DEFUALT_VAL = RobotState.IDLE.wristPos;
+    public static final double TUNE_HIGH_VAL = 100;
+    public static final double TUNE_LOW_VAL = -30;
 
     public static final double WRIST_SPEED = 1.0;
     public static final double WRIST_REVERSE_SPEED = WRIST_SPEED*-1;
     public static final double WRIST_STOP_SPEED = 1.0;
 
     public static final int ERROR_LIMIT = 1;
-
-    public static final int PID_SLOT = 0;
-    public static final int WRIST_FEED_FORWARD_VELOCITY = 0;
-    public static final int WRIST_FEED_FORWARD_ACCEL = 0;
-
   }
+
+  public static class kAuto {
+    public static final double CHARGE_SPEED = 2.0; // meters per second
+    public static final double AUTO_BALANCE_WAIT = 0.5;
+
+    public static final double BURM_SIDE_SPEED = 2.0; //mps
+    public static final double CUBE_SCORE_WAIT = 0.3; // sec
+}
+
+  public static class kAutoBalance {
+    public static final double FLATNESS_THRESHOLD_DEGREES = 0.15;
+    public static final double MAX_TILT_CHANGE_DIVIDER = 10; // TODO: Name better
+    public static final double MAX_SPEED = Constants.kSwerve.MAX_SPEED * 0.0035;
+  }
+
   public enum RobotState {
-    IDLE(3, 80, 0.0), 
+    IDLE(3, 80, 0), 
     GROUND_CONE(3.5, 0, -1.0),
     GROUND_CUBE(3, 0, 1.0),
     DOUBLE_CONE(0, 0, 0),
-    SINGLE_CONE(65,2,-1.0),
-    L1_CUBE(5,0,0),
-    L2_CUBE(25,0,0),
-    L3_CUBE(45,0,0),
-    L1_CONE(0,0,0),
-    L2_CONE(0,0,0),
-    L3_CONE(45,-20,-0.5);
+    SINGLE_CONE(0,70,-1.0),
+    L1_CUBE(5,0,0.5),
+    L2_CUBE(25,0,0.5),
+    L3_CUBE(45,10,0.5),
+    L1_CONE(0,0,-1.0),
+    L2_CONE(33,-10,-0.5),
+    L3_CONE(45,-10,-0.5);
 
 
     public double elevatorPos;
     public double wristPos;
-    private double manipulatorSpeed;
+    public double manipulatorSpeed;
+    public boolean changeSpeed;
 
     private RobotState(double elevatorPos, double wristPos, double manipulatorSpeed) {
+      this(elevatorPos, wristPos, manipulatorSpeed, true);
+    }
+
+    private RobotState(double elevatorPos, double wristPos, double manipulatorSpeed, boolean changeSpeed) {
         this.elevatorPos = elevatorPos;
         this.wristPos = wristPos;
         this.manipulatorSpeed = manipulatorSpeed;
+        this.changeSpeed = changeSpeed; 
     }
-
-    public double getElevatorPos() {return elevatorPos; }
-    public double getWristPos() {return wristPos; }
-    public double getManipulatorSpeed() {return manipulatorSpeed;}
   }
 }
