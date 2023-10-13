@@ -51,20 +51,23 @@ public class RobotContainer {
           () -> oi.getDriveTrainTranslationX(),
           () -> oi.getDriveTrainTranslationY(),
           () -> oi.getDriveTrainRotation(),
-          () -> elevator.getPose() > 20 ? 0.2 : 1.0
+          () -> elevator.getPose() > 20 ? 0.1 : 1.0
       )
     );
 
     oi.getDriverController().b().onTrue(CommandFactory.setRobotState(manipulator, elevator, RobotState.GROUND_CONE)).onFalse(CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
     oi.getDriverController().a().onTrue(CommandFactory.setRobotState(manipulator, elevator, RobotState.GROUND_CUBE)).onFalse(CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
-    oi.getDriverController().x().onTrue(CommandFactory.setRobotState(manipulator, elevator, RobotState.SINGLE_CONE)).onFalse(CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
+    oi.getDriverController().rightBumper().onTrue(CommandFactory.setRobotState(manipulator, elevator, RobotState.SINGLE_CONE)).onFalse(CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
     oi.getDriverController().y().onTrue(CommandFactory.setRobotState(manipulator, elevator, RobotState.DOUBLE_CONE)).onFalse(CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
 
-    oi.getDriverController().povUp().onTrue(new InstantCommand(() -> scoreChooser.getSelected().schedule())).onFalse(new SequentialCommandGroup(
+    oi.getDriverController().leftBumper().onTrue(new InstantCommand(() -> scoreChooser.getSelected().schedule())).onFalse(new SequentialCommandGroup(
       manipulator.reverseCurrentWrist(),
       new WaitCommand(1.0),
       CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE)
     ));
+
+    oi.getOperatorController().y().onTrue(elevator.resetElevatorPoseStart()).onFalse(elevator.resetElevatorPoseEnd());
+    oi.getOperatorController().a().onTrue(new InstantCommand(() -> swerve.resetGyro()));
   }
 
   private void setupScoreChooser() {

@@ -26,6 +26,7 @@ public class Manipulator extends SubsystemBase {
     private final AbsoluteEncoder absoluteEncoder;
 
     private final TunableNumber targetTunable;
+    private final TunableNumber manuSpeed;
 
     private static Manipulator instance;
 
@@ -51,12 +52,13 @@ public class Manipulator extends SubsystemBase {
         positionMotor.getEncoder().setVelocityConversionFactor((360 / kManipulator.MANIPULATOR_GEAR_RATIO) / 60);
 
         targetTunable = new TunableNumber("Wrist target", kManipulator.DEFUALT_VAL, Constants.kTuningMode);
+        manuSpeed = new TunableNumber("Manu speed", 0.0, Constants.kTuningMode);
     } 
     
     public Command setPosition(RobotState state) {
         return runOnce(
-            () -> targetTunable.setDefault(state.elevatorPos) 
-        ).until(() -> getError() < 1);
+            () -> targetTunable.setDefault(state.wristPos) 
+        ).until(() -> getError(state.wristPos) < 1);
     }
 
     public double getAbsoluteError(){
@@ -65,19 +67,19 @@ public class Manipulator extends SubsystemBase {
 
     public Command runWrist(RobotState state) {
         return runOnce(() -> {
-            spinMotor.set(state.manipulatorSpeed);
+            manuSpeed.setDefault(state.manipulatorSpeed);
          });
     }
 
     public Command reverseCurrentWrist() {
         // Double check if applied output is right shit
         return runOnce(() -> {
-            spinMotor.set(spinMotor.getAppliedOutput() * -1);
+            manuSpeed.setDefault(manuSpeed.get() * -1);
         });
     }
 
-    public double getError() {
-        return Math.abs(getWristPos() - targetTunable.get());
+    public double getError(double setpoint2) {
+        return Math.abs(getWristPos() - setpoint2);
     }
 
     public double getWristPos() {
@@ -102,6 +104,8 @@ public class Manipulator extends SubsystemBase {
         if (getAbsoluteError() > kManipulator.ERROR_LIMIT) { // figure out why cmomenting this out is breaking
             resetWristPos();
         }
+
+        spinMotor.set(manuSpeed.get());
 
         positionMotor.getPIDController().setReference(
             (targetTunable.get() > kManipulator.TUNE_HIGH_VAL || targetTunable.get() < kManipulator.TUNE_LOW_VAL) ? kManipulator.DEFUALT_VAL: targetTunable.get(), 

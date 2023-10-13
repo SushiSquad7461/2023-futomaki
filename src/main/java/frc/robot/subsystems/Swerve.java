@@ -108,6 +108,10 @@ public class Swerve extends SubsystemBase {
 
     public Gyro getGyro() { return gyro; }
 
+    public void resetGyro() {
+        gyro.zeroGyro();
+    }
+
     @Override
     public void periodic() { 
         odom.updatePoseWithGyro(getPose(),  gyro.getAngle());
