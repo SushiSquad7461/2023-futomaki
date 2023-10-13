@@ -79,7 +79,7 @@ public final class Constants {
 
         /* Swerve Current Limiting */
         public static final int ANGLE_CURRENT_LIMIT = 20;
-        public static final int DRIVE_CURRENT_LIMIT = 40;
+        public static final int DRIVE_CURRENT_LIMIT = 80;
 
         /* Translation Constants */
         public static final double TRANSLATION_P = 0.0001;
@@ -176,13 +176,13 @@ public final class Constants {
     GROUND_CONE(3.5, 0, -1.0),
     GROUND_CUBE(3, 0, 1.0),
     DOUBLE_CONE(0, 0, 0),
-    SINGLE_CONE(0,65,-1.0),
+    SINGLE_CONE(0,70,-1.0),
     L1_CUBE(5,0,0.5),
     L2_CUBE(25,0,0.5),
     L3_CUBE(45,10,0.5),
     L1_CONE(0,0,-1.0),
-    L2_CONE(43,-80,-1.0),
-    L3_CONE(45,-15,-1.0);
+    L2_CONE(33,-10,-0.5),
+    L3_CONE(45,-10,-0.5);
 
 
     public double elevatorPos;

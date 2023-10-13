@@ -65,6 +65,9 @@ public class RobotContainer {
       new WaitCommand(1.0),
       CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE)
     ));
+
+    oi.getOperatorController().y().onTrue(elevator.resetElevatorPoseStart()).onFalse(elevator.resetElevatorPoseEnd());
+    oi.getOperatorController().a().onTrue(new InstantCommand(() -> swerve.resetGyro()));
   }
 
   private void setupScoreChooser() {

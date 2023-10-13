@@ -26,9 +26,9 @@ public class Manipulator extends SubsystemBase {
     private final AbsoluteEncoder absoluteEncoder;
 
     private final TunableNumber targetTunable;
+    private final TunableNumber manuSpeed;
 
     private static Manipulator instance;
-    private RobotState currState;
 
     public static Manipulator getInstance() {
         if (instance == null){
@@ -52,13 +52,12 @@ public class Manipulator extends SubsystemBase {
         positionMotor.getEncoder().setVelocityConversionFactor((360 / kManipulator.MANIPULATOR_GEAR_RATIO) / 60);
 
         targetTunable = new TunableNumber("Wrist target", kManipulator.DEFUALT_VAL, Constants.kTuningMode);
-        currState = RobotState.IDLE;
+        manuSpeed = new TunableNumber("Manu speed", 0.0, Constants.kTuningMode);
     } 
     
     public Command setPosition(RobotState state) {
         return run(
             () ->  {
-                System.out.println("Setting new manu state: " + state.toString());
                 targetTunable.setDefault(state.wristPos);
             }
         ).until(() -> getError(state.wristPos) < 5);
@@ -70,15 +69,14 @@ public class Manipulator extends SubsystemBase {
 
     public Command runWrist(RobotState state) {
         return runOnce(() -> {
-            spinMotor.set(state.manipulatorSpeed);
-            currState = state;
+            manuSpeed.setDefault(state.manipulatorSpeed);
          });
     }
 
     public Command reverseCurrentWrist() {
         // Double check if applied output is right shit
         return runOnce(() -> {
-            spinMotor.set(currState.manipulatorSpeed * -1);
+            manuSpeed.setDefault(manuSpeed.get() * -1);
         });
     }
 
@@ -108,6 +106,8 @@ public class Manipulator extends SubsystemBase {
         if (getAbsoluteError() > kManipulator.ERROR_LIMIT) { // figure out why cmomenting this out is breaking
             resetWristPos();
         }
+
+        spinMotor.set(manuSpeed.get());
 
         positionMotor.getPIDController().setReference(
             // (targetTunable.get() > kManipulator.TUNE_HIGH_VAL || targetTunable.get() < kManipulator.TUNE_LOW_VAL) ? kManipulator.DEFUALT_VAL: targetTunable.get(), 

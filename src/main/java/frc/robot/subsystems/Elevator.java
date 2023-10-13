@@ -25,6 +25,8 @@ public class Elevator extends SubsystemBase {
 
     private static Elevator instance;
 
+    private boolean resetElevator;
+
     public static Elevator getInstance() {
         if (instance == null) {
             instance = new Elevator();
@@ -41,6 +43,8 @@ public class Elevator extends SubsystemBase {
 
         leftElevator.follow(rightElevator, true);
 
+        resetElevator = false;
+
         // Setup Motion Majic, this is used to reduce jerk in the elevator ???
         // rightElevator.getPIDController().setSmartMotionMaxVelocity(100, 0); // Velocity is in RPM
         // rightElevator.getPIDController().setSmartMotionMaxAccel(10, 0); // Acel in RPM^2
@@ -56,6 +60,25 @@ public class Elevator extends SubsystemBase {
         return run(
             () -> setpoint.setDefault(state.elevatorPos)
         ).until(() -> getError(state.elevatorPos) < 5);
+    }
+
+    public Command resetElevatorPoseStart() {
+        return runOnce(
+            () -> {
+                rightElevator.set(-0.1);
+                resetElevator = true;
+            }
+        );
+    }
+
+    public Command resetElevatorPoseEnd() {
+        return runOnce(
+            () -> {
+                rightElevator.set(0.0);
+                rightElevator.getEncoder().setPosition(0.0);
+                resetElevator = false;
+            }
+        );
     }
 
     public double getError(double setpoint) {
@@ -76,11 +99,14 @@ public class Elevator extends SubsystemBase {
             pid.updatePID(rightElevator);
         }
 
-        rightElevator.getPIDController().setReference(
+
+        if (!resetElevator) {
+          rightElevator.getPIDController().setReference(
             setpoint.get() > kElevator.MAX_POS || setpoint.get() < kElevator.MIN_POS ? kElevator.DEFUALT_VAL : setpoint.get(),
             CANSparkMax.ControlType.kPosition,
             0,
             ff.calculate(0.0)
-        );
+          );
+        }
     }
 }
