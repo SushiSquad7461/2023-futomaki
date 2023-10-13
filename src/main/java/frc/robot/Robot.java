@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Swerve;
+import frc.robot.util.AllianceColor;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -20,6 +21,7 @@ public class Robot extends TimedRobot {
   private Swerve swerve;
 
   private RobotContainer m_robotContainer;
+  private AllianceColor color;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -29,10 +31,14 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     m_robotContainer = new RobotContainer();
     swerve = Swerve.getInstance();
+    color = AllianceColor.getInstance();
   }
 
   @Override
-  public void robotPeriodic() { CommandScheduler.getInstance().run(); }
+  public void robotPeriodic() { 
+    CommandScheduler.getInstance().run();
+    color.updateAllianceColor();
+  }
 
   @Override
   public void disabledInit() {}
