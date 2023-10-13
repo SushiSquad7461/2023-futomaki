@@ -29,6 +29,7 @@ public class RobotContainer {
   private final Manipulator manipulator;
   private final Elevator elevator;
   private final Swerve swerve;
+  private final BuddyClimb climb;
 
   private final SendableChooser<Command> scoreChooser;
 
@@ -37,6 +38,7 @@ public class RobotContainer {
     elevator = Elevator.getInstance();
     manipulator = Manipulator.getInstance();
     swerve = Swerve.getInstance();
+    climb = BuddyClimb.getInstance(); 
 
     scoreChooser = new SendableChooser<Command>();
     setupScoreChooser();
@@ -68,6 +70,10 @@ public class RobotContainer {
 
     oi.getOperatorController().y().onTrue(elevator.resetElevatorPoseStart()).onFalse(elevator.resetElevatorPoseEnd());
     oi.getOperatorController().a().onTrue(new InstantCommand(() -> swerve.resetGyro()));
+
+    climb.setDefaultCommand(
+      new InstantCommand(() -> climb.setSpeed(oi.getOperatorController().getLeftY()))
+    );
   }
 
   private void setupScoreChooser() {
