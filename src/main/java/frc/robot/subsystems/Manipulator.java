@@ -56,9 +56,11 @@ public class Manipulator extends SubsystemBase {
     } 
     
     public Command setPosition(RobotState state) {
-        return runOnce(
-            () -> targetTunable.setDefault(state.wristPos) 
-        ).until(() -> getError(state.wristPos) < 1);
+        return run(
+            () ->  {
+                targetTunable.setDefault(state.wristPos);
+            }
+        ).until(() -> getError(state.wristPos) < 5);
     }
 
     public double getAbsoluteError(){
@@ -78,8 +80,8 @@ public class Manipulator extends SubsystemBase {
         });
     }
 
-    public double getError(double setpoint2) {
-        return Math.abs(getWristPos() - setpoint2);
+    public double getError(double setpoint) {
+        return Math.abs(getWristPos() - setpoint);
     }
 
     public double getWristPos() {
@@ -108,7 +110,8 @@ public class Manipulator extends SubsystemBase {
         spinMotor.set(manuSpeed.get());
 
         positionMotor.getPIDController().setReference(
-            (targetTunable.get() > kManipulator.TUNE_HIGH_VAL || targetTunable.get() < kManipulator.TUNE_LOW_VAL) ? kManipulator.DEFUALT_VAL: targetTunable.get(), 
+            // (targetTunable.get() > kManipulator.TUNE_HIGH_VAL || targetTunable.get() < kManipulator.TUNE_LOW_VAL) ? kManipulator.DEFUALT_VAL: targetTunable.get(), 
+            targetTunable.get(),
             ControlType.kPosition, 
             0,
             wristFeedforward.calculate(Math.toRadians(positionMotor.getEncoder().getPosition()), 0.0)
