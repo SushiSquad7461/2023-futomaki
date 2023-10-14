@@ -92,12 +92,18 @@ public class Manipulator extends SubsystemBase {
         positionMotor.getEncoder().setPosition(absoluteEncoder.getNormalizedPosition());
     }
 
+    public Command turnOfSpeed() {
+        return runOnce(() -> {
+            manuSpeed.setDefault(0);
+        });
+    }
+
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Wrist Position", positionMotor.getEncoder().getPosition());
-        SmartDashboard.putNumber("Wrist Setpoint", targetTunable.get());
-        SmartDashboard.putNumber("Absolute Position", absoluteEncoder.getPosition());
-        SmartDashboard.putNumber("Manipulator Current", spinMotor.getOutputCurrent());
+        // SmartDashboard.putNumber("Wrist Setpoint", targetTunable.get());
+        // SmartDashboard.putNumber("Absolute Position", absoluteEncoder.getPosition());
+        // SmartDashboard.putNumber("Manipulator Current", spinMotor.getOutputCurrent());
 
         if(Constants.kTuningMode) {
             pid.updatePID(positionMotor);

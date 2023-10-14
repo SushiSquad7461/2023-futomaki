@@ -10,23 +10,31 @@ import frc.robot.Constants.kBuddyClimb;
 public class BuddyClimb extends SubsystemBase {
     private final CANSparkMax anujIsASmallBitch;
 
-    public BuddyClimb() {
+    private static BuddyClimb instance;
+
+    public static BuddyClimb getInstance() {
+        if (instance == null) {
+            instance = new BuddyClimb();
+        }
+        return instance;
+    }
+
+    private BuddyClimb() {
         anujIsASmallBitch = new CANSparkMax(kBuddyClimb.BUDDY_CLIMB_MOTOR_ID, MotorType.kBrushless);
         anujIsASmallBitch.setSmartCurrentLimit(40);
         anujIsASmallBitch.setIdleMode(IdleMode.kBrake);
+        anujIsASmallBitch.setInverted(true);
     }
 
     public void setSpeed(double speed) {
         if (speed > 0) {
-            anujIsASmallBitch.setSmartCurrentLimit(1);
+            anujIsASmallBitch.setSmartCurrentLimit(40);
         } else {
-            anujIsASmallBitch.setSmartCurrentLimit(50);
+            anujIsASmallBitch.setSmartCurrentLimit(1);
         }
         anujIsASmallBitch.set(speed);
     }
 
     @Override
-    public void periodic() {
-    }
-
+    public void periodic() {}
 }

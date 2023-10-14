@@ -82,7 +82,7 @@ public class TeleopSwerveDrive extends CommandBase {
         rot = Normalization.cube(rot);
         rot *= kSwerve.MAX_ANGULAR_VELOCITY;
 
-        swerve.drive(new Translation2d(translation.getX(), translation.getY()), rot);
+        swerve.driveWithRotationLock(new Translation2d(translation.getX(), translation.getY()), rot);
     }
 
     private double applyDeadband(double initalVal) {

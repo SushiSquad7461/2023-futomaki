@@ -5,7 +5,9 @@ import SushiFrcLib.Sensors.gyro.Pigeon;
 import SushiFrcLib.Swerve.swerveModules.SwerveModule;
 import SushiFrcLib.Swerve.swerveModules.SwerveModuleNeoFalcon;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -15,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.kPorts;
 import frc.robot.Constants.kSwerve;
+import frc.robot.util.AllianceColor;
 import frc.robot.util.SwerveOdom;
 
 public class Swerve extends SubsystemBase {
@@ -24,6 +27,11 @@ public class Swerve extends SubsystemBase {
     private final Field2d field;
 
     private static Swerve instance;
+
+    private boolean locationLock;
+    private PIDController locationLockPID;
+
+    private AllianceColor color;
 
     public static Swerve getInstance() {
         if (instance == null) {
@@ -49,8 +57,40 @@ public class Swerve extends SubsystemBase {
 
         odom = new SwerveOdom(kSwerve.SWERVE_KINEMATICS, getPose());
 
+        locationLock = false;
+        locationLockPID = new PIDController(
+            0.1, // sir this is not tunned pls retune like rn rnrnrnnrnrnrnrnrnrn 
+            0.0, 
+            0.0
+        );
+
         field = new Field2d();
         SmartDashboard.putData("Field", field);
+
+        color = AllianceColor.getInstance();
+    }
+
+    public void turnOnLocationLock(double angle) {
+        locationLock = true;
+
+        if (color.isRed()) {
+            angle += 180;
+        }
+        
+        locationLockPID.setSetpoint(angle);
+        locationLockPID.calculate(gyro.getAngle().getDegrees());
+    }
+
+    public void turnOfLocationLock() {
+        locationLock = false;
+    }
+
+    public void driveWithRotationLock(Translation2d translation, double rotation) {
+        if (locationLock) {
+            rotation = locationLockPID.calculate(gyro.getAngle().getDegrees());
+        }
+
+        drive(translation, rotation);
     }
 
     public void drive(ChassisSpeeds chassisSpeeds) {

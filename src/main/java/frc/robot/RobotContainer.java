@@ -29,6 +29,8 @@ public class RobotContainer {
   private final Manipulator manipulator;
   private final Elevator elevator;
   private final Swerve swerve;
+  private final AutoCommands autos;
+  // private final BuddyClimb climb;
 
   private final SendableChooser<Command> scoreChooser;
 
@@ -37,6 +39,8 @@ public class RobotContainer {
     elevator = Elevator.getInstance();
     manipulator = Manipulator.getInstance();
     swerve = Swerve.getInstance();
+    autos = new AutoCommands(swerve, manipulator, elevator);
+    // climb = BuddyClimb.getInstance(); 
 
     scoreChooser = new SendableChooser<Command>();
     setupScoreChooser();
@@ -56,9 +60,13 @@ public class RobotContainer {
     );
 
     oi.getDriverController().b().onTrue(CommandFactory.setRobotState(manipulator, elevator, RobotState.GROUND_CONE)).onFalse(CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
-    oi.getDriverController().a().onTrue(CommandFactory.setRobotState(manipulator, elevator, RobotState.GROUND_CUBE)).onFalse(CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
+    oi.getDriverController().x().onTrue(CommandFactory.setRobotState(manipulator, elevator, RobotState.GROUND_CUBE)).onFalse(CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
     oi.getDriverController().rightBumper().onTrue(CommandFactory.setRobotState(manipulator, elevator, RobotState.SINGLE_CONE)).onFalse(CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
-    oi.getDriverController().y().onTrue(CommandFactory.setRobotState(manipulator, elevator, RobotState.DOUBLE_CONE)).onFalse(CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
+
+    oi.getDriverController().leftTrigger().onTrue(new InstantCommand(() -> swerve.turnOnLocationLock(180), swerve)).onFalse(new InstantCommand(() -> swerve.turnOfLocationLock(), swerve));
+    oi.getDriverController().rightTrigger().onTrue(new InstantCommand(() -> swerve.turnOnLocationLock(270), swerve)).onFalse(new InstantCommand(() -> swerve.turnOfLocationLock(), swerve));
+
+    oi.getDriverController().povUp().onTrue(new InstantCommand(() -> swerve.turnOnLocationLock(0), swerve)).onFalse(new InstantCommand(() -> swerve.turnOfLocationLock(), swerve));
 
     oi.getDriverController().leftBumper().onTrue(new InstantCommand(() -> scoreChooser.getSelected().schedule())).onFalse(new SequentialCommandGroup(
       manipulator.reverseCurrentWrist(),
@@ -68,6 +76,11 @@ public class RobotContainer {
 
     oi.getOperatorController().y().onTrue(elevator.resetElevatorPoseStart()).onFalse(elevator.resetElevatorPoseEnd());
     oi.getOperatorController().a().onTrue(new InstantCommand(() -> swerve.resetGyro()));
+    oi.getOperatorController().x().onTrue(manipulator.turnOfSpeed());
+
+    // climb.setDefaultCommand(
+    //   new InstantCommand(() -> climb.setSpeed(oi.getOperatorController().getLeftY()), climb)
+    // );
   }
 
   private void setupScoreChooser() {
@@ -80,5 +93,5 @@ public class RobotContainer {
     SmartDashboard.putData("Score Selecter", scoreChooser);
   }
 
-  public Command getAutonomousCommand() { return null; }
+  public Command getAutonomousCommand() { return autos.getAuto(); }
 }

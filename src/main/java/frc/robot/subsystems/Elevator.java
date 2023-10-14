@@ -91,9 +91,9 @@ public class Elevator extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Eleavator Current", rightElevator.getOutputCurrent());
+        // SmartDashboard.putNumber("Eleavator Current", rightElevator.getOutputCurrent());
         SmartDashboard.putNumber("Elevator Position", rightElevator.getEncoder().getPosition());
-        SmartDashboard.putNumber("Elevator Setpoint", setpoint.get());
+        // SmartDashboard.putNumber("Elevator Setpoint", setpoint.get());
 
         if (Constants.kTuningMode) {
             pid.updatePID(rightElevator);
