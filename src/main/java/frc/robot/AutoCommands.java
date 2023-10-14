@@ -27,12 +27,23 @@ public class AutoCommands {
 
     public AutoCommands(Swerve swerve, Manipulator manipulator, Elevator elevator) {
         eventMap = new HashMap<String, Command>();
-        eventMap.put("getCube", CommandFactory.setRobotState(manipulator, elevator, RobotState.GROUND_CUBE));
-        eventMap.put("getCone", CommandFactory.setRobotState(manipulator, elevator, RobotState.GROUND_CONE));
-        eventMap.put("scoreCone", CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CONE));
-        eventMap.put("scoreCube", CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CUBE));
-        eventMap.put("idle", CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
+        eventMap.put("getCube", CommandFactory.setRobotStateWristFirst(manipulator, elevator, RobotState.GROUND_CUBE));
+        eventMap.put("getCone", CommandFactory.setRobotStateWristFirst(manipulator, elevator, RobotState.GROUND_CONE));
+        eventMap.put("scoreCone", CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CONE));
+        eventMap.put("scoreCube", CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CUBE));
+        eventMap.put("idle", CommandFactory.setRobotStateWristFirst(manipulator, elevator, RobotState.IDLE));
         eventMap.put("autoBalance", new AutoBalance());
+//
+//////
+
+
+
+
+
+
+
+
+
 
         swerveAutoBuilder = new SwerveAutoBuilder(
             swerve::getOdomPose, 
@@ -49,81 +60,87 @@ public class AutoCommands {
         chooser.addOption("nothing", new InstantCommand(() -> {}));
         
         chooser.addOption("2pieceblue", new SequentialCommandGroup(
-            CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CONE),
+            CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CONE),
             new WaitCommand(0.5),
-            CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE),
+            CommandFactory.setRobotStateWristFirst(manipulator, elevator, RobotState.IDLE),
             makeAuto("2piece"),
-            CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CONE)
+            CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CONE)
         ));
 
-        chooser.addOption("2.5pieceblue", new SequentialCommandGroup(
-            CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CONE),
-            new WaitCommand(0.5),
-            CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE),
-            makeAuto("2piece"),
+        // chooser.addOption("2.5pieceblue", new SequentialCommandGroup(
+        //     CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CONE),
+        //     new WaitCommand(0.5),
+        //     CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE),
+        //     makeAuto("2piece"),
 
-            CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CONE),
-            new WaitCommand(0.5),
-            CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE),
-            makeAuto("2.5piece")
-        ));
+        //     CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CONE),
+        //     new WaitCommand(0.5),
+        //     CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE),
+        //     makeAuto("2.5piece")
+        // ));
 
-        chooser.addOption("2piecechargeblue", new SequentialCommandGroup(
-            CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CONE),
-            new WaitCommand(0.5),
-            CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE),
-            makeAuto("2piece"),
+        // chooser.addOption("2piecechargeblue", new SequentialCommandGroup(
+        //     CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CONE),
+        //     new WaitCommand(0.5),
+        //     CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE),
+        //     makeAuto("2piece"),
 
-            CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CONE),
-            new WaitCommand(0.5),
-            CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE),
-            makeAuto("2piececharge", kAuto.CHARGE_SPEED),
-            new WaitCommand(kAuto.AUTO_BALANCE_WAIT),
-            new AutoBalance()
-        ));
+        //     CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CONE),
+        //     new WaitCommand(0.5),
+        //     CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE),
+        //     makeAuto("2piececharge", kAuto.CHARGE_SPEED),
+        //     new WaitCommand(kAuto.AUTO_BALANCE_WAIT),
+        //     new AutoBalance()
+        // ));
 
         chooser.addOption("chargeblue", new SequentialCommandGroup(
+            CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CONE),
+            new WaitCommand(0.5),
+            CommandFactory.setRobotStateWristFirst(manipulator, elevator, RobotState.IDLE),
             makeAuto("charge", kAuto.CHARGE_SPEED),
-            new WaitCommand(kAuto.AUTO_BALANCE_WAIT),
-            new AutoBalance()   
+            new WaitCommand(kAuto.AUTO_BALANCE_WAIT)
+//..            new AutoBalance()   
         ));
 
         chooser.addOption("2piecered", new SequentialCommandGroup(
-            // CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CONE),
-            // manipulator.reverseCurrentWrist(),
+            CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CONE),
+            manipulator.reverseCurrentWrist(),
             // new WaitCommand(0.25),
-            // CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE),
-            makeAuto("Red_2piece"),
-            CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CONE)
+            CommandFactory.setRobotStateWristFirst(manipulator, elevator, RobotState.IDLE)
+            // makeAuto("Red_2piece"),
+            // CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CONE)
         ));
 
-        chooser.addOption("2.5piecered", new SequentialCommandGroup(
-            CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CONE),
-            new WaitCommand(0.5),
-            CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE),
-            makeAuto("Red_2piece"),
+        // chooser.addOption("2.5piecered", new SequentialCommandGroup(
+        //     CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CONE),
+        //     new WaitCommand(0.5),
+        //     CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE),
+        //     makeAuto("Red_2piece"),
 
-            CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CONE),
-            new WaitCommand(0.5),
-            CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE),
-            makeAuto("Red_2.5piece")
-        ));
+        //     CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CONE),
+        //     new WaitCommand(0.5),
+        //     CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE),
+        //     makeAuto("Red_2.5piece")
+        // ));
 
-        chooser.addOption("2piecechargered", new SequentialCommandGroup(
-            CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CONE),
-            new WaitCommand(0.5),
-            CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE),
-            makeAuto("Red_2piece"),
+        // chooser.addOption("2piecechargered", new SequentialCommandGroup(
+        //     CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CONE),
+        //     new WaitCommand(0.5),
+        //     CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE),
+        //     makeAuto("Red_2piece"),
 
-            CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CONE),
-            new WaitCommand(0.5),
-            CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE),
-            makeAuto("Red_2piececharge", kAuto.CHARGE_SPEED),
-            new WaitCommand(kAuto.AUTO_BALANCE_WAIT),
-            new AutoBalance()
-        ));
+        //     CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CONE),
+        //     new WaitCommand(0.5),
+        //     CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE),
+        //     makeAuto("Red_2piececharge", kAuto.CHARGE_SPEED),
+        //     new WaitCommand(kAuto.AUTO_BALANCE_WAIT),
+        //     new AutoBalance()
+        // ));
 
         chooser.addOption("chargered", new SequentialCommandGroup(
+            CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CONE),
+            new WaitCommand(0.5),
+            CommandFactory.setRobotStateWristFirst(manipulator, elevator, RobotState.IDLE),
             makeAuto("Red_charge", kAuto.CHARGE_SPEED),
             new WaitCommand(kAuto.AUTO_BALANCE_WAIT),
             new AutoBalance()    

@@ -20,4 +20,20 @@ public class CommandFactory {
           ).schedule();  
         }, manipulator, elevator);
     }
+
+    public static Command setRobotStateElevatorFirst(Manipulator manipulator, Elevator elevator, RobotState state) {
+      return new SequentialCommandGroup(
+            elevator.moveElevator(state),
+            manipulator.setPosition(state),
+            state.changeSpeed ? manipulator.runWrist(state) : new InstantCommand()
+          );
+    }
+
+    public static Command setRobotStateWristFirst(Manipulator manipulator, Elevator elevator, RobotState state) {
+      return new SequentialCommandGroup(
+        manipulator.setPosition(state),
+        elevator.moveElevator(state),
+        state.changeSpeed ? manipulator.runWrist(state) : new InstantCommand()
+      );
+    }
 }
