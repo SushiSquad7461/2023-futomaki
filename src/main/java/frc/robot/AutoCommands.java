@@ -89,9 +89,10 @@ public class AutoCommands {
         ));
 
         chooser.addOption("2piecered", new SequentialCommandGroup(
-            CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CONE),
-            new WaitCommand(0.5),
-            CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE),
+            // CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CONE),
+            // manipulator.reverseCurrentWrist(),
+            // new WaitCommand(0.25),
+            // CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE),
             makeAuto("Red_2piece"),
             CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CONE)
         ));
@@ -129,7 +130,6 @@ public class AutoCommands {
         ));
 
         SmartDashboard.putData("Auto Selecter", chooser);
-
     }
 
     private Command makeAuto(String path) {

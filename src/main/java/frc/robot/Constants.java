@@ -83,18 +83,10 @@ public final class Constants {
         public static final int DRIVE_CURRENT_LIMIT = 80;
 
         /* Translation Constants */
-        public static final double TRANSLATION_P = 0.0001;
-        public static final double TRANSLATION_I = 0.000;
-        public static final double TRANSLATION_D = 0.000;
-        public static final double TRANSLATION_F = 0.0001;
-        public static final PIDConstants TRANSLATION_CONSTANTS = new PIDConstants(TRANSLATION_P, TRANSLATION_I, TRANSLATION_D, TRANSLATION_F);
+        public static final PIDConstants TRANSLATION_CONSTANTS = new PIDConstants(2,0,0);
 
         /* Rotation Constants */
-        public static final double ROTATION_P = 0.0001;
-        public static final double ROTATION_I = 0.000;
-        public static final double ROTATION_D = 0.000;
-        public static final double ROTATION_F = 0.0001;
-        public static final PIDConstants ROTATION_CONSTANTS = new PIDConstants(ROTATION_P, ROTATION_I, ROTATION_D, ROTATION_F);
+        public static final PIDConstants ROTATION_CONSTANTS = new PIDConstants(4,0,0);
 
         /* Angle Motor PID Values */
         public static final double ANGLE_P = 0.005; // 0.3

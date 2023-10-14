@@ -29,6 +29,7 @@ public class RobotContainer {
   private final Manipulator manipulator;
   private final Elevator elevator;
   private final Swerve swerve;
+  private final AutoCommands autos;
   // private final BuddyClimb climb;
 
   private final SendableChooser<Command> scoreChooser;
@@ -38,6 +39,7 @@ public class RobotContainer {
     elevator = Elevator.getInstance();
     manipulator = Manipulator.getInstance();
     swerve = Swerve.getInstance();
+    autos = new AutoCommands(swerve, manipulator, elevator);
     // climb = BuddyClimb.getInstance(); 
 
     scoreChooser = new SendableChooser<Command>();
@@ -91,5 +93,5 @@ public class RobotContainer {
     SmartDashboard.putData("Score Selecter", scoreChooser);
   }
 
-  public Command getAutonomousCommand() { return null; }
+  public Command getAutonomousCommand() { return autos.getAuto(); }
 }
