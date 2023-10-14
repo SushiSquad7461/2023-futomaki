@@ -46,7 +46,7 @@ public final class Constants {
         public static final double kP = 0.03; // 0.03
         public static final double kI = 0;
         public static final double kD = 0;
-        public static final double kG = 0.0; // properly tuned
+        public static final double kG = 0.2; // properly tuned
 
         public static final int LEFT_MOTOR_ID = 22;
         public static final int RIGHT_MOTOR_ID = 20;
@@ -72,10 +72,11 @@ public final class Constants {
         public static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMATER * Math.PI;
 
         public static final SwerveKinematics SWERVE_KINEMATICS = new SwerveKinematics(
-                new Translation2d(WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0),
-                new Translation2d(WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0),
-                new Translation2d(-WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0),
-                new Translation2d(-WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0));
+          new Translation2d(-WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0),
+          new Translation2d(WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0),
+          new Translation2d(WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0),
+          new Translation2d(-WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0)
+        );
 
         /* Swerve Current Limiting */
         public static final int ANGLE_CURRENT_LIMIT = 20;
@@ -122,19 +123,19 @@ public final class Constants {
 
         public static final boolean SWERVE_TUNNING_MODE = false;
 
-        public static final SwerveModuleConstants MOD0_CONSTANTS = new FutomakiSwerveModule(0, 249.9, SDSModules.MK4i);
-        public static final SwerveModuleConstants MOD1_CONSTANTS = new FutomakiSwerveModule(1, 68.291, SDSModules.MK4i);
-        public static final SwerveModuleConstants MOD2_CONSTANTS = new FutomakiSwerveModule(2, 268.33, SDSModules.MK4i);
-        public static final SwerveModuleConstants MOD3_CONSTANTS = new FutomakiSwerveModule(3, 194.58, SDSModules.MK4i);
+        public static final SwerveModuleConstants MOD0_CONSTANTS = new FutomakiSwerveModule(0, 249.9 - 90, SDSModules.MK4i);
+        public static final SwerveModuleConstants MOD1_CONSTANTS = new FutomakiSwerveModule(1, 68.291 + 270, SDSModules.MK4i);
+        public static final SwerveModuleConstants MOD2_CONSTANTS = new FutomakiSwerveModule(2, 268.33 - 90, SDSModules.MK4i);
+        public static final SwerveModuleConstants MOD3_CONSTANTS = new FutomakiSwerveModule(3, 194.58 - 90, SDSModules.MK4i);
     }
 
   public static class kManipulator {
-    public static final double kP = 0.02;
+    public static final double kP = 0.04;
     public static final double kI = 0;
     public static final double kD = 0;
     public static final double kF = 0;
 
-    public static final double kG = 0.0;
+    public static final double kG = 0.5;
 
     public static final int kSpinMotorID = 24;
     public static final int kPositionMotorID = 21;
@@ -143,7 +144,7 @@ public final class Constants {
     public static final int ENCODER_CHANNEL = 5;
     public static final double ENCODER_ANGLE_OFFSET = -77.100446;
 
-    public static final int SPIN_CURRENT_LIMIT = 25;
+    public static final int SPIN_CURRENT_LIMIT = 10;
     public static final int POSITION_CURRENT_LIMIT = 40;
 
     public static final double DEFUALT_VAL = RobotState.IDLE.wristPos;
@@ -172,16 +173,16 @@ public final class Constants {
   }
 
   public enum RobotState {
-    IDLE(3, 80, 0), 
-    GROUND_CONE(3.5, 0, -1.0),
+    IDLE(3, 80, 0, false), 
+    GROUND_CONE(5, 0, -1.0),
     GROUND_CUBE(3, 0, 1.0),
     DOUBLE_CONE(0, 0, 0),
     SINGLE_CONE(0,70,-1.0),
-    L1_CUBE(5,0,0.5),
+    L1_CUBE(10,0,0.5),
     L2_CUBE(25,0,0.5),
-    L3_CUBE(45,10,0.5),
-    L1_CONE(0,0,-1.0),
-    L2_CONE(33,-10,-0.5),
+    L3_CUBE(45,15,0.5),
+    L1_CONE(10,0,-1.0),
+    L2_CONE(33,-10,-0.5), // 45 -70
     L3_CONE(45,-10,-0.5);
 
 
