@@ -23,9 +23,9 @@ public class CommandFactory {
 
     public static Command setRobotStateElevatorFirst(Manipulator manipulator, Elevator elevator, RobotState state) {
       return new SequentialCommandGroup(
+            state.changeSpeed ? manipulator.runWrist(state) : new InstantCommand(),
             elevator.moveElevator(state),
-            manipulator.setPosition(state),
-            state.changeSpeed ? manipulator.runWrist(state) : new InstantCommand()
+            manipulator.setPosition(state)
           );
     }
 

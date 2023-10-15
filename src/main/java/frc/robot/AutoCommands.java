@@ -2,9 +2,14 @@ package frc.robot;
 
 import java.util.HashMap;
 
+import javax.sound.midi.Sequencer;
+
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -33,17 +38,6 @@ public class AutoCommands {
         eventMap.put("scoreCube", CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CUBE));
         eventMap.put("idle", CommandFactory.setRobotStateWristFirst(manipulator, elevator, RobotState.IDLE));
         eventMap.put("autoBalance", new AutoBalance());
-//
-//////
-
-
-
-
-
-
-
-
-
 
         swerveAutoBuilder = new SwerveAutoBuilder(
             swerve::getOdomPose, 
@@ -58,6 +52,24 @@ public class AutoCommands {
         chooser = new SendableChooser<>();
         
         chooser.addOption("nothing", new InstantCommand(() -> {}));
+
+        chooser.addOption("One piece", new SequentialCommandGroup(
+            new InstantCommand(() -> swerve.setOdomPose(new Pose2d(new Translation2d(0,0), Rotation2d.fromDegrees(0)))),
+            CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CONE),
+            new WaitCommand(0.5),
+            manipulator.reverseCurrentWrist(),
+            new WaitCommand(0.5),
+            CommandFactory.setRobotStateWristFirst(manipulator, elevator, RobotState.IDLE)
+        ));  
+
+        chooser.addOption("One piece Blue", new SequentialCommandGroup(
+            new InstantCommand(() -> swerve.setOdomPose(new Pose2d(new Translation2d(0,0), Rotation2d.fromDegrees(180)))),
+            CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CONE),
+            new WaitCommand(0.5),
+            manipulator.reverseCurrentWrist(),
+            new WaitCommand(0.5),
+            CommandFactory.setRobotStateWristFirst(manipulator, elevator, RobotState.IDLE)
+        ));   
         
         chooser.addOption("2pieceblue", new SequentialCommandGroup(
             CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CONE),
@@ -94,21 +106,26 @@ public class AutoCommands {
         // ));
 
         chooser.addOption("chargeblue", new SequentialCommandGroup(
+            new InstantCommand(() -> swerve.setOdomPose(new Pose2d(new Translation2d(0,0), Rotation2d.fromDegrees(180)))),
             CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CONE),
             new WaitCommand(0.5),
+            manipulator.reverseCurrentWrist(),
+            new WaitCommand(0.25),
             CommandFactory.setRobotStateWristFirst(manipulator, elevator, RobotState.IDLE),
-            makeAuto("charge", kAuto.CHARGE_SPEED),
-            new WaitCommand(kAuto.AUTO_BALANCE_WAIT)
-//..            new AutoBalance()   
-        ));
+            makeAuto("chargeWithoutLeavingCommunity", kAuto.CHARGE_SPEED),
+            new WaitCommand(kAuto.AUTO_BALANCE_WAIT),
+            new AutoBalance()
+            // new AutoBalance()
+        ));                            
 
         chooser.addOption("2piecered", new SequentialCommandGroup(
             CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CONE),
+            new WaitCommand(0.25),
             manipulator.reverseCurrentWrist(),
-            // new WaitCommand(0.25),
-            CommandFactory.setRobotStateWristFirst(manipulator, elevator, RobotState.IDLE)
-            // makeAuto("Red_2piece"),
-            // CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CONE)
+            new WaitCommand(0.25),
+            CommandFactory.setRobotStateWristFirst(manipulator, elevator, RobotState.IDLE),
+            makeAuto("Red_2piece"),
+            CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CONE)
         ));
 
         // chooser.addOption("2.5piecered", new SequentialCommandGroup(
@@ -140,10 +157,12 @@ public class AutoCommands {
         chooser.addOption("chargered", new SequentialCommandGroup(
             CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CONE),
             new WaitCommand(0.5),
+            manipulator.reverseCurrentWrist(),
+            new WaitCommand(0.25),
             CommandFactory.setRobotStateWristFirst(manipulator, elevator, RobotState.IDLE),
-            makeAuto("Red_charge", kAuto.CHARGE_SPEED),
+            makeAuto("Red_chargeWithoutLeavingCommunity", kAuto.CHARGE_SPEED),
             new WaitCommand(kAuto.AUTO_BALANCE_WAIT),
-            new AutoBalance()    
+            new AutoBalance() 
         ));
 
         SmartDashboard.putData("Auto Selecter", chooser);
