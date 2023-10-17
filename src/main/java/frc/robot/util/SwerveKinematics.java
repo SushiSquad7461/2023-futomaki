@@ -48,7 +48,7 @@ public class SwerveKinematics {
 
         return new Twist2d(
             chassisSpeedMatrix.get(0,0), 
-            chassisSpeedMatrix.get(1,0),
+            -chassisSpeedMatrix.get(1,0), // PLEASE CHANGE LATER< GANSTA MADE THIS MISTAKE
             chassisSpeedMatrix.get(2,0)
         );
     }

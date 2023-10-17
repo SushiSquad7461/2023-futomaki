@@ -72,17 +72,19 @@ public class TeleopSwerveDrive extends CommandBase {
         double leftRight = -xaxisSupplier.get() * (isRedAlliance ? -1 : 1);
         double rot = rotSupplier.get();
 
-        forwardBack = Normalization.cube(applyDeadband(forwardBack));
+        forwardBack = (applyDeadband(forwardBack));
 
-        leftRight = Normalization.cube(applyDeadband(leftRight));
+        leftRight = (applyDeadband(leftRight));
 
-        Translation2d translation = new Translation2d(forwardBack, leftRight)
-                .times(kSwerve.MAX_SPEED);
+        Translation2d translation = new Translation2d(forwardBack, leftRight);
 
         rot = Normalization.cube(rot);
         rot *= kSwerve.MAX_ANGULAR_VELOCITY;
 
-        swerve.driveWithRotationLock(new Translation2d(translation.getX(), translation.getY()), rot);
+        swerve.driveWithRotationLock(
+            (new Translation2d(Normalization.cube(translation.getNorm()), translation.getAngle())).times(kSwerve.MAX_SPEED), 
+            rot
+        );
     }
 
     private double applyDeadband(double initalVal) {

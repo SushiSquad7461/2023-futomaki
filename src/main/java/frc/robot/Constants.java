@@ -80,13 +80,13 @@ public final class Constants {
 
         /* Swerve Current Limiting */
         public static final int ANGLE_CURRENT_LIMIT = 20;
-        public static final int DRIVE_CURRENT_LIMIT = 80;
+        public static final int DRIVE_CURRENT_LIMIT = 60;
 
         /* Translation Constants */
-        public static final PIDConstants TRANSLATION_CONSTANTS = new PIDConstants(2,0,0);
+        public static final PIDConstants TRANSLATION_CONSTANTS = new PIDConstants(1.0,0,0);
 
         /* Rotation Constants */
-        public static final PIDConstants ROTATION_CONSTANTS = new PIDConstants(4,0,0);
+        public static final PIDConstants ROTATION_CONSTANTS = new PIDConstants(1.5,0,0);
 
         /* Angle Motor PID Values */
         public static final double ANGLE_P = 0.005; // 0.3
@@ -95,14 +95,14 @@ public final class Constants {
         public static final double ANGLE_F = 0.0; // 12.0
 
         /* Drive Motor PID Values */
-        public static final double DRIVE_P = 0.01700; // 0.009
+        public static final double DRIVE_P = 0.02500; // 0.009
         public static final double DRIVE_I = 0.0;
         public static final double DRIVE_D = 0.0;
         public static final double DRIVE_F = 0.0458;
 
         /* Swerve Profiling Values */
-        public static final double MAX_SPEED = 5; // 4.5 meters per second
-        public static final double MAX_ACCELERATION = 4; // 2
+        public static final double MAX_SPEED = 5; // 5 meters per second
+        public static final double MAX_ACCELERATION = 4; // 4
         public static final double MAX_ANGULAR_VELOCITY = 10; // 11.5
         public static final double MAX_ANGULAR_ACCELERATION = 20; // 11.5
 
@@ -113,7 +113,7 @@ public final class Constants {
         /* Angle Encoder Invert */
         public static final boolean CANCODER_INVERSION = true;
 
-        public static final boolean SWERVE_TUNNING_MODE = false;
+        public static final boolean SWERVE_TUNNING_MODE = true;
 
         public static final SwerveModuleConstants MOD0_CONSTANTS = new FutomakiSwerveModule(0, 249.9 - 90, SDSModules.MK4i);
         public static final SwerveModuleConstants MOD1_CONSTANTS = new FutomakiSwerveModule(1, 68.291 + 270, SDSModules.MK4i);
@@ -122,12 +122,12 @@ public final class Constants {
     }
 
   public static class kManipulator {
-    public static final double kP = 0.04;
+    public static final double kP = 0.02;
     public static final double kI = 0;
     public static final double kD = 0;
     public static final double kF = 0;
 
-    public static final double kG = 0.5;
+    public static final double kG = 1;
 
     public static final int kSpinMotorID = 24;
     public static final int kPositionMotorID = 21;
@@ -151,7 +151,7 @@ public final class Constants {
   }
 
   public static class kAuto {
-    public static final double CHARGE_SPEED = 2.0; // meters per second
+    public static final double CHARGE_SPEED = 1.5; // meters per second
     public static final double AUTO_BALANCE_WAIT = 0.5;
 
     public static final double BURM_SIDE_SPEED = 2.0; //mps
@@ -161,7 +161,7 @@ public final class Constants {
   public static class kAutoBalance {
     public static final double FLATNESS_THRESHOLD_DEGREES = 0.15;
     public static final double MAX_TILT_CHANGE_DIVIDER = 10; // TODO: Name better
-    public static final double MAX_SPEED = Constants.kSwerve.MAX_SPEED * 0.0035;
+    public static final double MAX_SPEED = Constants.kSwerve.MAX_SPEED * 0.0085;
   }
 
   public enum RobotState {
@@ -170,9 +170,9 @@ public final class Constants {
     GROUND_CUBE(3, 0, 1.0),
     DOUBLE_CONE(0, 0, 0),
     SINGLE_CONE(0,70,-1.0),
-    L1_CUBE(10,0,0.5),
-    L2_CUBE(25,0,0.5),
-    L3_CUBE(45,15,0.5),
+    L1_CUBE(3,80,1),
+    L2_CUBE(25,15,0.5),
+    L3_CUBE(45,25,0.5),
     L1_CONE(10,0,-1.0),
     L2_CONE(33,-10,-0.5), // 45 -70
     L3_CONE(45,-10,-0.5);

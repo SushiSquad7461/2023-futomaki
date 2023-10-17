@@ -26,7 +26,7 @@ public class Manipulator extends SubsystemBase {
     private final AbsoluteEncoder absoluteEncoder;
 
     private final TunableNumber targetTunable;
-    private final TunableNumber manuSpeed;
+    private double manuSpeed;
 
     private static Manipulator instance;
 
@@ -52,7 +52,7 @@ public class Manipulator extends SubsystemBase {
         positionMotor.getEncoder().setVelocityConversionFactor((360 / kManipulator.MANIPULATOR_GEAR_RATIO) / 60);
 
         targetTunable = new TunableNumber("Wrist target", kManipulator.DEFUALT_VAL, Constants.kTuningMode);
-        manuSpeed = new TunableNumber("Manu speed", 0.0, Constants.kTuningMode);
+        manuSpeed = 0.0;
     } 
     
     public Command setPosition(RobotState state) {
@@ -69,14 +69,15 @@ public class Manipulator extends SubsystemBase {
 
     public Command runWrist(RobotState state) {
         return runOnce(() -> {
-            manuSpeed.setDefault(state.manipulatorSpeed);
+            manuSpeed = state.manipulatorSpeed;
          });
     }
 
     public Command reverseCurrentWrist() {
         // Double check if applied output is right shit
         return runOnce(() -> {
-            manuSpeed.setDefault(manuSpeed.get() * -1);
+            System.out.println("In Reverser Wrist");
+            manuSpeed = manuSpeed * -1;
         });
     }
 
@@ -94,13 +95,14 @@ public class Manipulator extends SubsystemBase {
 
     public Command turnOfSpeed() {
         return runOnce(() -> {
-            manuSpeed.setDefault(0);
+            manuSpeed = 0.0;
         });
     }
 
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Wrist Position", positionMotor.getEncoder().getPosition());
+        SmartDashboard.putNumber("Wrist error", getError(targetTunable.get()));
         // SmartDashboard.putNumber("Wrist Setpoint", targetTunable.get());
         // SmartDashboard.putNumber("Absolute Position", absoluteEncoder.getPosition());
         // SmartDashboard.putNumber("Manipulator Current", spinMotor.getOutputCurrent());
@@ -113,7 +115,7 @@ public class Manipulator extends SubsystemBase {
             resetWristPos();
         }
 
-        spinMotor.set(manuSpeed.get());
+        spinMotor.set(manuSpeed);
 
         positionMotor.getPIDController().setReference(
             // (targetTunable.get() > kManipulator.TUNE_HIGH_VAL || targetTunable.get() < kManipulator.TUNE_LOW_VAL) ? kManipulator.DEFUALT_VAL: targetTunable.get(), 

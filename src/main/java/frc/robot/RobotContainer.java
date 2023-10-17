@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.Constants.RobotState;
+import frc.robot.commands.AutoBalance;
 import frc.robot.commands.CommandFactory;
 import frc.robot.commands.TeleopSwerveDrive;
 import frc.robot.subsystems.BuddyClimb;
@@ -59,14 +60,15 @@ public class RobotContainer {
       )
     );
 
-    oi.getDriverController().b().onTrue(CommandFactory.setRobotState(manipulator, elevator, RobotState.GROUND_CONE)).onFalse(CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
-    oi.getDriverController().x().onTrue(CommandFactory.setRobotState(manipulator, elevator, RobotState.GROUND_CUBE)).onFalse(CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
+    oi.getDriverController().rightTrigger().onTrue(CommandFactory.setRobotState(manipulator, elevator, RobotState.GROUND_CONE)).onFalse(CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
+    oi.getDriverController().leftTrigger().onTrue(CommandFactory.setRobotState(manipulator, elevator, RobotState.GROUND_CUBE)).onFalse(CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
     oi.getDriverController().rightBumper().onTrue(CommandFactory.setRobotState(manipulator, elevator, RobotState.SINGLE_CONE)).onFalse(CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
 
-    oi.getDriverController().leftTrigger().onTrue(new InstantCommand(() -> swerve.turnOnLocationLock(180), swerve)).onFalse(new InstantCommand(() -> swerve.turnOfLocationLock(), swerve));
-    oi.getDriverController().rightTrigger().onTrue(new InstantCommand(() -> swerve.turnOnLocationLock(270), swerve)).onFalse(new InstantCommand(() -> swerve.turnOfLocationLock(), swerve));
+    oi.getDriverController().b().onTrue(new InstantCommand(() -> swerve.turnOnLocationLock(270), swerve)).onFalse(new InstantCommand(() -> swerve.turnOfLocationLock(), swerve));
+    oi.getDriverController().x().onTrue(new InstantCommand(() -> swerve.turnOnLocationLock(180), swerve)).onFalse(new InstantCommand(() -> swerve.turnOfLocationLock(), swerve));
 
     oi.getDriverController().povUp().onTrue(new InstantCommand(() -> swerve.turnOnLocationLock(0), swerve)).onFalse(new InstantCommand(() -> swerve.turnOfLocationLock(), swerve));
+    oi.getDriverController().povDown().whileTrue(new AutoBalance());
 
     oi.getDriverController().leftBumper().onTrue(new InstantCommand(() -> scoreChooser.getSelected().schedule())).onFalse(new SequentialCommandGroup(
       manipulator.reverseCurrentWrist(),

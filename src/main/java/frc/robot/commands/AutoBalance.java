@@ -44,9 +44,9 @@ public class AutoBalance extends CommandBase {
             (initialTilt.getNorm() - tilt.getNorm())
             > (initialTilt.getNorm() / kAutoBalance.MAX_TILT_CHANGE_DIVIDER))) {
 
-            swerve.drive(tilt.times(Constants.kAutoBalance.MAX_SPEED), 0);
+            swerve.driveRobotOriented(tilt.times(Constants.kAutoBalance.MAX_SPEED), 0);
         } else {
-            swerve.drive(new Translation2d(0, 0), 0.1);
+            swerve.driveRobotOriented(new Translation2d(0, 0), 0.1);
         }
     }
 

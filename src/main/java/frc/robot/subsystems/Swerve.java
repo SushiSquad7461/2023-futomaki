@@ -94,7 +94,33 @@ public class Swerve extends SubsystemBase {
     }
 
     public void drive(ChassisSpeeds chassisSpeeds) {
-        drive(new Translation2d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond), chassisSpeeds.omegaRadiansPerSecond);
+        driveRobotOriented(
+            new Translation2d(
+                // color.isRed() ? 1 : -1  * chassisSpeeds.vxMetersPerSecond, 
+                chassisSpeeds.vxMetersPerSecond,
+                // color.isRed() ? -1 : 1 * chassisSpeeds.vyMetersPerSecond
+                chassisSpeeds.vyMetersPerSecond
+            ),
+            chassisSpeeds.omegaRadiansPerSecond
+        );
+    }
+
+    public void driveRobotOriented(Translation2d vector, double rot) {
+        SwerveModuleState[] states = kSwerve.SWERVE_KINEMATICS.getStates(vector, rot);
+
+        // TODO: FIX SHITY CODE https://github.com/frc1678/C2023-Public/blob/main/src/main/java/com/team1678/lib/swerve/SwerveDriveKinematics.java
+        for (SwerveModuleState i : states) {
+            if (i.speedMetersPerSecond > kSwerve.MAX_SPEED) {
+                i.speedMetersPerSecond = kSwerve.MAX_SPEED;
+            }
+        }
+
+        for (SwerveModule i : swerveMods) {
+            if (kSwerve.SWERVE_TUNNING_MODE) {
+                SmartDashboard.putString("Swerve Module State " + i.moduleNumber, states[i.moduleNumber].speedMetersPerSecond + ", " + states[i.moduleNumber].angle.getDegrees());
+            }
+            i.setDesiredState(states[i.moduleNumber]);
+        }
     }
 
     // Vector is in mps, and rot is in radians per sec
@@ -142,7 +168,10 @@ public class Swerve extends SubsystemBase {
         return ret;
     }
 
-    public void setOdomPose(Pose2d pose) { odom.setPose(pose); }
+    public void setOdomPose(Pose2d pose) { 
+        odom.setPose(pose);
+        gyro.setAngle(pose.getRotation());
+    }
 
     public Pose2d getOdomPose() { return odom.getPose(); }
 
