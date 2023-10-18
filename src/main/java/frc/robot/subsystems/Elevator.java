@@ -21,7 +21,10 @@ public class Elevator extends SubsystemBase {
     private PIDTuning pid;
 
     private final TunableNumber setpoint;
-    private final ElevatorFeedforward ff;
+    private final ElevatorFeedforward ffd;
+    private final ElevatorFeedforward ffu;
+    private static boolean up;
+
 
     private static Elevator instance;
 
@@ -36,7 +39,9 @@ public class Elevator extends SubsystemBase {
     }
 
     private Elevator() {
-        ff = new ElevatorFeedforward(0, kElevator.kG, 0);
+        ffd = new ElevatorFeedforward(0, 0.03, 0);
+        ffu = new ElevatorFeedforward(0, kElevator.kG, 0);
+        up = false;
 
         leftElevator = MotorHelper.createSparkMax(kElevator.LEFT_MOTOR_ID, MotorType.kBrushless, false, kElevator.CURRENT_LIMIT, IdleMode.kBrake);
         rightElevator = MotorHelper.createSparkMax(kElevator.RIGHT_MOTOR_ID, MotorType.kBrushless, true, kElevator.CURRENT_LIMIT, IdleMode.kBrake, Constants.kElevator.kP, Constants.kElevator.kI, Constants.kElevator.kD, 0.0);
@@ -57,6 +62,13 @@ public class Elevator extends SubsystemBase {
     }
 
     public Command moveElevator(RobotState state) {
+        if(state.elevatorPos>getPose()){
+            up=true;
+            rightElevator.getPIDController().setP(Constants.kElevator.kUpP);
+        }else{
+            up=false;
+            rightElevator.getPIDController().setP(Constants.kElevator.kDownP);
+        }
         return run(
             () -> setpoint.setDefault(state.elevatorPos)
         ).until(() -> getError(state.elevatorPos) < 5);
@@ -89,6 +101,8 @@ public class Elevator extends SubsystemBase {
         return rightElevator.getEncoder().getPosition();
     }
 
+
+
     @Override
     public void periodic() {
         // SmartDashboard.putNumber("Eleavator Current", rightElevator.getOutputCurrent());
@@ -103,12 +117,21 @@ public class Elevator extends SubsystemBase {
 
 
         if (!resetElevator) {
-          rightElevator.getPIDController().setReference(
-            setpoint.get() > kElevator.MAX_POS || setpoint.get() < kElevator.MIN_POS ? kElevator.DEFUALT_VAL : setpoint.get(),
-            CANSparkMax.ControlType.kPosition,
-            0,
-            ff.calculate(0.0)
-          );
+            if(up == true){
+                rightElevator.getPIDController().setReference(
+                    setpoint.get() > kElevator.MAX_POS || setpoint.get() < kElevator.MIN_POS ? kElevator.DEFUALT_VAL : setpoint.get(),
+                    CANSparkMax.ControlType.kPosition,
+                    0,
+                ffu.calculate(0.0)
+            );
+            }else{
+                rightElevator.getPIDController().setReference(
+                    setpoint.get() > kElevator.MAX_POS || setpoint.get() < kElevator.MIN_POS ? kElevator.DEFUALT_VAL : setpoint.get(),
+                    CANSparkMax.ControlType.kPosition,
+                    0,
+                ffd.calculate(0.0)
+                );
+            }
         }
     }
 }

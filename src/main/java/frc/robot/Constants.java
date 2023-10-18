@@ -44,6 +44,8 @@ public final class Constants {
 
     public static class kElevator {
         public static final double kP = 0.03; // 0.03
+        public static final double kUpP = 0.03; // 0.03
+        public static final double kDownP = 0;
         public static final double kI = 0;
         public static final double kD = 0;
         public static final double kG = 0.2; // properly tuned
