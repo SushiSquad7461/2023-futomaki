@@ -2,8 +2,10 @@ package frc.robot.subsystems;
 
 import SushiFrcLib.Sensors.gyro.Gyro;
 import SushiFrcLib.Sensors.gyro.Pigeon;
-import SushiFrcLib.Swerve.swerveModules.SwerveModule;
-import SushiFrcLib.Swerve.swerveModules.SwerveModuleNeoFalcon;
+import SushiFrcLib.SmartDashboard.AllianceColor;
+import SushiFrcLib.Swerve.SwerveOdom;
+import SushiFrcLib.Swerve.SwerveModules.SwerveModule;
+import SushiFrcLib.Swerve.SwerveModules.SwerveModuleNeoFalcon;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -17,8 +19,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.kPorts;
 import frc.robot.Constants.kSwerve;
-import frc.robot.util.AllianceColor;
-import frc.robot.util.SwerveOdom;
 
 public class Swerve extends SubsystemBase {
     private final SwerveModule[] swerveMods;

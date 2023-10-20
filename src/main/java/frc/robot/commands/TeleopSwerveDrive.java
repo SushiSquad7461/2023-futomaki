@@ -1,9 +1,8 @@
 package frc.robot.commands;
 
 import SushiFrcLib.Math.Normalization;
+import SushiFrcLib.SmartDashboard.AllianceColor;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.Constants.kSwerve;
@@ -22,8 +21,7 @@ public class TeleopSwerveDrive extends CommandBase {
     private final Supplier<Double> rotSupplier;
     private final Supplier<Double> speedMultiplier;
 
-    private Boolean isRedAlliance;
-    private NetworkTable table;
+    private AllianceColor color;
 
     /**
      * Pass in defualt speed multiplier of 1.0
@@ -57,20 +55,17 @@ public class TeleopSwerveDrive extends CommandBase {
         this.yaxisSupplier = yaxisSupplier;
         this.rotSupplier = rotSupplier;
         this.speedMultiplier = speedMultiplier;
-        
-        table = NetworkTableInstance.getDefault().getTable("FMSInfo");
-        isRedAlliance = table.getEntry("IsRedAlliance").getBoolean(true);
+
+        this.color = AllianceColor.getInstance();
 
         addRequirements(swerve);
     }
 
     @Override
     public void execute() {
-        isRedAlliance = table.getEntry("IsRedAlliance").getBoolean(true);
-
-        double forwardBack = yaxisSupplier.get() * (isRedAlliance ? -1 : 1);
-        double leftRight = -xaxisSupplier.get() * (isRedAlliance ? -1 : 1);
-        double rot = rotSupplier.get();
+        double forwardBack = (yaxisSupplier.get() * (color.isRed() ? -1 : 1)) * speedMultiplier.get();
+        double leftRight = (-xaxisSupplier.get() * (color.isRed() ? -1 : 1)) * speedMultiplier.get();
+        double rot = (rotSupplier.get()) * speedMultiplier.get();
 
         forwardBack = (applyDeadband(forwardBack));
 
