@@ -9,6 +9,7 @@ import SushiFrcLib.Sensors.absoluteEncoder.AbsoluteEncoder;
 import SushiFrcLib.SmartDashboard.PIDTuning;
 import SushiFrcLib.SmartDashboard.TunableNumber;
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -30,6 +31,16 @@ public class Manipulator extends SubsystemBase {
 
     private final TunableNumber targetTunable;
     private double manuSpeed;
+    private DigitalInput beamBreakCone;
+    private DigitalInput beamBreakCube;
+
+    private enum ManipulatorStates{
+        CONE,
+        CUBE,
+        EMPTY
+    }
+
+    private ManipulatorStates manipulatorState;
 
     private static Manipulator instance;
 
@@ -58,7 +69,30 @@ public class Manipulator extends SubsystemBase {
 
         targetTunable = new TunableNumber("Wrist target", kManipulator.DEFUALT_VAL, Constants.kTuningMode);
         manuSpeed = 0.0;
-    } 
+
+        beamBreakCone = new DigitalInput(0); //making beambreak
+        beamBreakCube = new DigitalInput(0); //making beambreak
+
+        manipulatorState = ManipulatorStates.EMPTY;
+    }
+
+    public void setState(){
+        if(isBeamBreakCone()) {
+            manipulatorState = ManipulatorStates.CONE;
+        } else if(isBeamBreakCube()) {
+            manipulatorState = ManipulatorStates.CUBE;
+        } else {
+            manipulatorState = ManipulatorStates.EMPTY;
+        }
+    }
+
+    public boolean isBeamBreakCone(){
+        return beamBreakCone.get();
+    }
+
+    public boolean isBeamBreakCube(){
+        return beamBreakCube.get();
+    }
     
     public Command setPosition(RobotState state) {
         return run(
@@ -138,5 +172,6 @@ public class Manipulator extends SubsystemBase {
             movingUp ? wristFeedforwardUp.calculate(Math.toRadians(positionMotor.getEncoder().getPosition()), 0.0) 
                      : wristFeedforwardDown.calculate(Math.toRadians(positionMotor.getEncoder().getPosition()), 0.0)
         );
+        setState();
     }
 }
