@@ -2,8 +2,8 @@ package frc.robot.subsystems;
 
 import SushiFrcLib.Sensors.gyro.Gyro;
 import SushiFrcLib.Sensors.gyro.Pigeon;
-import SushiFrcLib.Swerve.swerveModules.SwerveModule;
-import SushiFrcLib.Swerve.swerveModules.SwerveModuleNeoFalcon;
+import SushiFrcLib.Swerve.SwerveModules.SwerveModule;
+import SushiFrcLib.Swerve.SwerveModules.SwerveModuleNeoFalcon;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;

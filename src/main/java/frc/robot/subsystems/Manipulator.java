@@ -34,7 +34,7 @@ public class Manipulator extends SubsystemBase {
     private static Manipulator instance;
 
     public static Manipulator getInstance() {
-        if (instance == null){
+        if (instance == null) {
             return new Manipulator();
         }
         return instance;
@@ -42,10 +42,10 @@ public class Manipulator extends SubsystemBase {
 
     private Manipulator() {
         spinMotor = MotorHelper.createSparkMax(kManipulator.kSpinMotorID, MotorType.kBrushless, false,kManipulator.SPIN_CURRENT_LIMIT, IdleMode.kBrake);
-        positionMotor = MotorHelper.createSparkMax(kManipulator.kPositionMotorID, MotorType.kBrushless, false, kManipulator.POSITION_CURRENT_LIMIT, IdleMode.kBrake, kManipulator.kP, kManipulator.kI, kManipulator.kD, kManipulator.kF);
+        positionMotor = MotorHelper.createSparkMax(kManipulator.kPositionMotorID, MotorType.kBrushless, false, kManipulator.POSITION_CURRENT_LIMIT, IdleMode.kBrake, kManipulator.kP_UP, kManipulator.kI, kManipulator.kD, 0.0);
 
         if (Constants.kTuningMode) {
-            pid = new PIDTuning("Maniupaltor", kManipulator.kP, kManipulator.kI, kManipulator.kD, Constants.kTuningMode);
+            pid = new PIDTuning("Maniupaltor", kManipulator.kP_UP, kManipulator.kI, kManipulator.kD, Constants.kTuningMode);
         }
 
         wristFeedforwardUp = new ArmFeedforward(0.0, kManipulator.kG_UP, 0.0); 
@@ -58,6 +58,8 @@ public class Manipulator extends SubsystemBase {
 
         targetTunable = new TunableNumber("Wrist target", kManipulator.DEFUALT_VAL, Constants.kTuningMode);
         manuSpeed = 0.0;
+
+        movingUp = true;
     } 
     
     public Command setPosition(RobotState state) {
