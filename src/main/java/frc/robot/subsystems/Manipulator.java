@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -16,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.RobotState;
 import frc.robot.Constants.kManipulator;
+import frc.robot.Constants.kPorts;
 
 public class Manipulator extends SubsystemBase {
     private final CANSparkMax spinMotor;
@@ -23,8 +25,8 @@ public class Manipulator extends SubsystemBase {
 
     private PIDTuning pid;
 
-    private final ArmFeedforward wristFeedforwardUp;
-    private final ArmFeedforward wristFeedforwardDown;
+    private final ArmFeedforward wristFFUp;
+    private final ArmFeedforward wristFFDown;
     private boolean movingUp;
 
     private final AbsoluteEncoder absoluteEncoder;
@@ -33,14 +35,6 @@ public class Manipulator extends SubsystemBase {
     private double manuSpeed;
     private DigitalInput beamBreakCone;
     private DigitalInput beamBreakCube;
-
-    private enum ManipulatorStates{
-        CONE,
-        CUBE,
-        EMPTY
-    }
-
-    private ManipulatorStates manipulatorState;
 
     private static Manipulator instance;
 
@@ -52,15 +46,15 @@ public class Manipulator extends SubsystemBase {
     }
 
     private Manipulator() {
-        spinMotor = MotorHelper.createSparkMax(kManipulator.kSpinMotorID, MotorType.kBrushless, false,kManipulator.SPIN_CURRENT_LIMIT, IdleMode.kBrake);
-        positionMotor = MotorHelper.createSparkMax(kManipulator.kPositionMotorID, MotorType.kBrushless, false, kManipulator.POSITION_CURRENT_LIMIT, IdleMode.kBrake, kManipulator.kP, kManipulator.kI, kManipulator.kD, kManipulator.kF);
+        spinMotor = MotorHelper.createSparkMax(kPorts.SPIN_MOTOR_ID, MotorType.kBrushless, false,kManipulator.SPIN_CURRENT_LIMIT, IdleMode.kBrake);
+        positionMotor = MotorHelper.createSparkMax(kPorts.kPOSITION_MOTOR_ID, MotorType.kBrushless, false, kManipulator.POSITION_CURRENT_LIMIT, IdleMode.kBrake, kManipulator.kP, kManipulator.kI, kManipulator.kD, kManipulator.kF);
 
         if (Constants.kTuningMode) {
             pid = new PIDTuning("Maniupaltor", kManipulator.kP, kManipulator.kI, kManipulator.kD, Constants.kTuningMode);
         }
 
-        wristFeedforwardUp = new ArmFeedforward(0.0, kManipulator.kG_UP, 0.0); 
-        wristFeedforwardDown = new ArmFeedforward(0.0, kManipulator.kG_DOWN, 0.0); 
+        wristFFUp = new ArmFeedforward(0.0, kManipulator.kG_UP, 0.0); 
+        wristFFDown = new ArmFeedforward(0.0, kManipulator.kG_DOWN, 0.0); 
 
         absoluteEncoder = new AbsoluteEncoder(kManipulator.ENCODER_CHANNEL, kManipulator.ENCODER_ANGLE_OFFSET);
        
@@ -72,17 +66,20 @@ public class Manipulator extends SubsystemBase {
 
         beamBreakCone = new DigitalInput(0); //making beambreak
         beamBreakCube = new DigitalInput(0); //making beambreak
-
-        manipulatorState = ManipulatorStates.EMPTY;
     }
 
-    public void setState(){
-        if(isBeamBreakCone()) {
-            manipulatorState = ManipulatorStates.CONE;
-        } else if(isBeamBreakCube()) {
-            manipulatorState = ManipulatorStates.CUBE;
-        } else {
-            manipulatorState = ManipulatorStates.EMPTY;
+    public void changeSpinState(RobotState state){
+        switch (state) {
+            case IDLE:
+                if(isBeamBreakCone()) {
+                    spinMotor.set(kManipulator.IDLE_SPEED_CONE);
+                } else if(isBeamBreakCube()) {
+                    spinMotor.set(kManipulator.IDLE_SPEED_CUBE);
+                } else {
+                    spinMotor.set(state.manipulatorSpeed);
+                }
+            default:
+                spinMotor.set(state.manipulatorSpeed);
         }
     }
 
@@ -107,7 +104,7 @@ public class Manipulator extends SubsystemBase {
 
                 targetTunable.setDefault(state.wristPos);
             }
-        ).until(() -> getError(state.wristPos) < kManipulator.MAX_ERROR);
+        ).until(() -> getError(state.wristPos) < kManipulator.PID_ERROR);
     }
 
     public double getAbsoluteError(){
@@ -146,6 +143,10 @@ public class Manipulator extends SubsystemBase {
         });
     }
 
+    public double posMotorInRadians(){
+        return Math.toRadians(positionMotor.getEncoder().getPosition());
+    }
+
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Wrist Position", positionMotor.getEncoder().getPosition());
@@ -169,8 +170,8 @@ public class Manipulator extends SubsystemBase {
             targetTunable.get(),
             ControlType.kPosition, 
             0,
-            movingUp ? wristFeedforwardUp.calculate(Math.toRadians(positionMotor.getEncoder().getPosition()), 0.0) 
-                     : wristFeedforwardDown.calculate(Math.toRadians(positionMotor.getEncoder().getPosition()), 0.0)
+            movingUp ? wristFFUp.calculate(posMotorInRadians(), 0.0) 
+                     : wristFFDown.calculate(posMotorInRadians(), 0.0)
         );
         setState();
     }

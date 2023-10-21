@@ -40,6 +40,10 @@ public final class Constants {
     public static class kPorts {
         public static final String CANIVORE_NAME = "Sussy Squad";
         public static final int PIGEON_ID = 13;
+
+        public static final int SPIN_MOTOR_ID = 24;
+        public static final int kPOSITION_MOTOR_ID = 21;
+    
     }
 
     public static class kElevator {
@@ -133,9 +137,6 @@ public final class Constants {
     public static final double kP_UP = 0; //set this
     public static final double kP_DOWN = 0; //set this
 
-    public static final int kSpinMotorID = 24;
-    public static final int kPositionMotorID = 21;
-
     public static final double MANIPULATOR_GEAR_RATIO = 160/3; //160:3
     public static final int ENCODER_CHANNEL = 5;
     public static final double ENCODER_ANGLE_OFFSET = -77.100446;
@@ -151,8 +152,11 @@ public final class Constants {
     public static final double WRIST_REVERSE_SPEED = WRIST_SPEED*-1;
     public static final double WRIST_STOP_SPEED = 1.0;
 
-    public static final int ERROR_LIMIT = 1;
-    public static final int MAX_ERROR = 5;
+    public static final int ERROR_LIMIT = 1; //absolute encoder error limit
+    public static final int PID_ERROR = 5;
+
+    public static final double IDLE_SPEED_CONE = 0.5;
+    public static final double IDLE_SPEED_CUBE = 0.2;
   }
 
   public static class kAuto {
