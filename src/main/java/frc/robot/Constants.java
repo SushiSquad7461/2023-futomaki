@@ -122,12 +122,14 @@ public final class Constants {
     }
 
   public static class kManipulator {
-    public static final double kP = 0.02;
     public static final double kI = 0;
     public static final double kD = 0;
-    public static final double kF = 0;
 
-    public static final double kG = 1;
+    public static final double kG_UP = 0.8; //0.2
+    public static final double kG_DOWN = 0.2;
+
+    public static final double kP_UP = 0.02; //set this
+    public static final double kP_DOWN = 0.015; //set this
 
     public static final int kSpinMotorID = 24;
     public static final int kPositionMotorID = 21;
@@ -148,6 +150,7 @@ public final class Constants {
     public static final double WRIST_STOP_SPEED = 1.0;
 
     public static final int ERROR_LIMIT = 1;
+    public static final int MAX_ERROR = 5;
   }
 
   public static class kAuto {
