@@ -8,7 +8,6 @@ import frc.robot.Constants.RobotState;
 import frc.robot.commands.AutoBalance;
 import frc.robot.commands.CommandFactory;
 import frc.robot.commands.TeleopSwerveDrive;
-import frc.robot.subsystems.BuddyClimb;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Swerve;
@@ -56,7 +55,7 @@ public class RobotContainer {
           () -> oi.getDriveTrainTranslationX(),
           () -> oi.getDriveTrainTranslationY(),
           () -> oi.getDriveTrainRotation(),
-          () -> elevator.getPose() > 20 ? 0.05 : 1.0
+          () -> elevator.getPose() > 20 ? 0.5 : 1.0
       )
     );
 

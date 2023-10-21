@@ -7,12 +7,12 @@ package frc.robot;
 import com.pathplanner.lib.auto.PIDConstants;
 
 import SushiFrcLib.Swerve.SDSModules;
+import SushiFrcLib.Swerve.SwerveKinematics;
 import SushiFrcLib.Swerve.SwerveModuleConstants;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.util.FutomakiSwerveModule;
-import frc.robot.util.SwerveKinematics;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
