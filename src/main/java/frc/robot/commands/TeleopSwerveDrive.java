@@ -21,8 +21,6 @@ public class TeleopSwerveDrive extends CommandBase {
     private final Supplier<Double> rotSupplier;
     private final Supplier<Double> speedMultiplier;
 
-    private AllianceColor color;
-
     /**
      * Pass in defualt speed multiplier of 1.0
      */
@@ -56,20 +54,18 @@ public class TeleopSwerveDrive extends CommandBase {
         this.rotSupplier = rotSupplier;
         this.speedMultiplier = speedMultiplier;
 
-        this.color = AllianceColor.getInstance();
-
         addRequirements(swerve);
     }
 
     @Override
     public void execute() {
-        double forwardBack = (yaxisSupplier.get() * (color.isRed() ? -1 : 1)) * speedMultiplier.get();
-        double leftRight = (-xaxisSupplier.get() * (color.isRed() ? -1 : 1)) * speedMultiplier.get();
+        double forwardBack = yaxisSupplier.get() * speedMultiplier.get();
+        double leftRight = -xaxisSupplier.get()  * speedMultiplier.get();
         double rot = (rotSupplier.get()) * speedMultiplier.get();
 
-        forwardBack = (applyDeadband(forwardBack));
+        forwardBack = Normalization.applyDeadband(forwardBack, Constants.STICK_DEADBAND);
 
-        leftRight = (applyDeadband(leftRight));
+        leftRight = Normalization.applyDeadband(leftRight, Constants.STICK_DEADBAND);
 
         Translation2d translation = new Translation2d(forwardBack, leftRight);
 
@@ -80,11 +76,5 @@ public class TeleopSwerveDrive extends CommandBase {
             (new Translation2d(Normalization.cube(translation.getNorm()), translation.getAngle())).times(kSwerve.MAX_SPEED), 
             rot
         );
-    }
-
-    private double applyDeadband(double initalVal) {
-        return Math.abs(initalVal) <  Constants.STICK_DEADBAND ? 0 : (
-            (initalVal - ((initalVal < 0 ? -1 : 1) * Constants.STICK_DEADBAND)) 
-            / (1 - Constants.STICK_DEADBAND));
     }
 }

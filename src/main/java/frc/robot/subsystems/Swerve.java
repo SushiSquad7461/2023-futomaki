@@ -1,22 +1,10 @@
 package frc.robot.subsystems;
 
-import SushiFrcLib.Sensors.gyro.Gyro;
 import SushiFrcLib.Sensors.gyro.Pigeon;
 import SushiFrcLib.SmartDashboard.AllianceColor;
-import SushiFrcLib.Swerve.SwerveOdom;
-import SushiFrcLib.Swerve.SwerveModules.SwerveModule;
 import SushiFrcLib.Swerve.SwerveModules.SwerveModuleNeoFalcon;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.kPorts;
 import frc.robot.Constants.kSwerve;
 import frc.robot.util.BaseSwerve;
@@ -26,8 +14,6 @@ public class Swerve extends BaseSwerve {
 
     private boolean locationLock;
     private PIDController locationLockPID;
-
-    private AllianceColor color;
 
     public static Swerve getInstance() {
         if (instance == null) {
@@ -57,17 +43,11 @@ public class Swerve extends BaseSwerve {
             0.0, 
             0.0
         );
-
-        color = AllianceColor.getInstance();
     }
 
     public void turnOnLocationLock(double angle) {
         locationLock = true;
 
-        if (color.isRed()) {
-            angle += 180;
-        }
-        
         locationLockPID.setSetpoint(angle);
         locationLockPID.calculate(getGyro().getAngle().getDegrees());
     }
