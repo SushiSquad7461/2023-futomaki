@@ -43,12 +43,12 @@ public final class Constants {
     }
 
     public static class kElevator {
-        public static final double kP = 0.03; // 0.03
-        public static final double kUpP = 0.03; // 0.03
-        public static final double kDownP = 0;
+        public static final double kP_UP = 0.1; // 0.03
+        public static final double kP_DOWN = 0.04;
         public static final double kI = 0;
         public static final double kD = 0;
-        public static final double kG = 0.2; // properly tuned
+        public static final double kG_DOWN = 0.3;
+        public static final double kG_UP = 0.7;
 
         public static final int LEFT_MOTOR_ID = 22;
         public static final int RIGHT_MOTOR_ID = 20;

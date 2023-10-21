@@ -44,12 +44,12 @@ public class Elevator extends SubsystemBase {
     }
 
     private Elevator() {
-        ffd = new ElevatorFeedforward(0, 0.03, 0);
-        ffu = new ElevatorFeedforward(0, kElevator.kG, 0);
-        up = false;
+        ffd = new ElevatorFeedforward(0, kElevator.kG_DOWN, 0);
+        ffu = new ElevatorFeedforward(0, kElevator.kG_UP, 0);
+        up = true;
 
         leftElevator = MotorHelper.createSparkMax(kElevator.LEFT_MOTOR_ID, MotorType.kBrushless, false, kElevator.CURRENT_LIMIT, IdleMode.kBrake);
-        rightElevator = MotorHelper.createSparkMax(kElevator.RIGHT_MOTOR_ID, MotorType.kBrushless, true, kElevator.CURRENT_LIMIT, IdleMode.kBrake, Constants.kElevator.kP, Constants.kElevator.kI, Constants.kElevator.kD, 0.0);
+        rightElevator = MotorHelper.createSparkMax(kElevator.RIGHT_MOTOR_ID, MotorType.kBrushless, true, kElevator.CURRENT_LIMIT, IdleMode.kBrake, Constants.kElevator.kP_UP, Constants.kElevator.kI, Constants.kElevator.kD, 0.0);
 
         leftElevator.follow(rightElevator, true);
 
@@ -60,25 +60,29 @@ public class Elevator extends SubsystemBase {
         // rightElevator.getPIDController().setSmartMotionMaxAccel(10, 0); // Acel in RPM^2
 
         if (Constants.kTuningMode) {
-            pid = new PIDTuning("Elevator", kElevator.kP, kElevator.kI, kElevator.kD, Constants.kTuningMode);
+            pid = new PIDTuning("Elevator", kElevator.kP_UP, kElevator.kI, kElevator.kD, Constants.kTuningMode);
         }
       
         setpoint = new TunableNumber("Elavator Setpoint", kElevator.DEFUALT_VAL, Constants.kTuningMode);
     }
 
     public Command moveElevator(RobotState state) {
-        if(state.elevatorPos>getPose()){
-            up=true;
-            rightElevator.getPIDController().setP(Constants.kElevator.kUpP);
-        }else{
-            up=false;
-            rightElevator.getPIDController().setP(Constants.kElevator.kDownP);
-        }
-
         return new SequentialCommandGroup(
-            run(() -> setpoint.setDefault(state.elevatorPos)),
+            run(
+                () -> {
+                    if (state.elevatorPos > getPose()) {
+                        up = true;
+                        rightElevator.getPIDController().setP(Constants.kElevator.kP_UP);
+                    } else {
+                        up = false;
+                        rightElevator.getPIDController().setP(Constants.kElevator.kP_DOWN);
+                    }
+
+                    setpoint.setDefault(state.elevatorPos);
+                }
+            ),
             new WaitUntilCommand(closeToSetpoint(state.elevatorPos))
-            );
+        );
     }
 
     public Command resetElevatorPoseStart() {
@@ -102,7 +106,6 @@ public class Elevator extends SubsystemBase {
 
     public double getError(double setpoint) {
         return Math.abs(rightElevator.getEncoder().getPosition() - setpoint);
-        //return rightElevator.getPIDController().
     }
 
     public BooleanSupplier closeToSetpoint(double setpoint) {
@@ -129,21 +132,12 @@ public class Elevator extends SubsystemBase {
 
 
         if (!resetElevator) {
-            if(up == true){
-                rightElevator.getPIDController().setReference(
-                    setpoint.get() > kElevator.MAX_POS || setpoint.get() < kElevator.MIN_POS ? kElevator.DEFUALT_VAL : setpoint.get(),
-                    CANSparkMax.ControlType.kPosition,
-                    0,
-                ffu.calculate(0.0)
+            rightElevator.getPIDController().setReference(
+                setpoint.get() > kElevator.MAX_POS || setpoint.get() < kElevator.MIN_POS ? kElevator.DEFUALT_VAL : setpoint.get(),
+                CANSparkMax.ControlType.kPosition,
+                0,
+                up ? ffu.calculate(0.0) : ffd.calculate(0.0)
             );
-            }else{
-                rightElevator.getPIDController().setReference(
-                    setpoint.get() > kElevator.MAX_POS || setpoint.get() < kElevator.MIN_POS ? kElevator.DEFUALT_VAL : setpoint.get(),
-                    CANSparkMax.ControlType.kPosition,
-                    0,
-                ffd.calculate(0.0)
-                );
-            }
         }
     }
 }
