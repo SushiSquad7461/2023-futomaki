@@ -10,6 +10,7 @@ import SushiFrcLib.Motor.MotorHelper;
 import SushiFrcLib.SmartDashboard.PIDTuning;
 import SushiFrcLib.SmartDashboard.TunableNumber;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -34,6 +35,8 @@ public class Elevator extends SubsystemBase {
     private static Elevator instance;
 
     private boolean resetElevator;
+
+    private final DigitalInput hello = new DigitalInput(9);
 
     public static Elevator getInstance() {
         if (instance == null) {
@@ -125,6 +128,7 @@ public class Elevator extends SubsystemBase {
         // SmartDashboard.putNumber("Elevator Setpoint", setpoint.get());
         SmartDashboard.putNumber("Elebator error", getError(setpoint.get()));
 
+        SmartDashboard.putBoolean("Hrllo ", hello.get());
 
         if (Constants.kTuningMode) {
             pid.updatePID(rightElevator);
