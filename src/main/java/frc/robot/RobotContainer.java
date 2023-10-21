@@ -55,7 +55,7 @@ public class RobotContainer {
           () -> oi.getDriveTrainTranslationX(),
           () -> oi.getDriveTrainTranslationY(),
           () -> oi.getDriveTrainRotation(),
-          () -> elevator.getPose() > 20 ? 0.05 : 1.0
+          () -> elevator.getPose() > 20 ? 0.5 : 1.0
       )
     );
 
