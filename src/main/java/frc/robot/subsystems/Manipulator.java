@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -11,7 +13,9 @@ import SushiFrcLib.SmartDashboard.TunableNumber;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
 import frc.robot.Constants.RobotState;
 import frc.robot.Constants.kManipulator;
@@ -63,19 +67,20 @@ public class Manipulator extends SubsystemBase {
     } 
     
     public Command setPosition(RobotState state) {
-        return run(
-            () ->  {
-                if (state.wristPos > positionMotor.getEncoder().getPosition()) {
-                    positionMotor.getPIDController().setP(kManipulator.kP_UP); // setting the p
-                    movingUp=true;
-                } else {
-                    positionMotor.getPIDController().setP(kManipulator.kP_DOWN); // setting the p
-                    movingUp=false;
+        return new SequentialCommandGroup(
+            runOnce(
+                () ->  {
+                    movingUp = state.wristPos > positionMotor.getEncoder().getPosition();
+                    positionMotor.getPIDController().setP(movingUp ? kManipulator.kP_UP : kManipulator.kP_DOWN); // setting the P
+                    targetTunable.setDefault(state.wristPos);
                 }
+            ),
+            new WaitUntilCommand(closeToSetpoint(state.wristPos))
+        );
+    }
 
-                targetTunable.setDefault(state.wristPos);
-            }
-        ).until(() -> getError(state.wristPos) < kManipulator.MAX_ERROR);
+    public BooleanSupplier closeToSetpoint(double setpoint) {
+        return () -> (getError(setpoint) < 5);
     }
 
     public double getAbsoluteError(){
@@ -84,6 +89,7 @@ public class Manipulator extends SubsystemBase {
 
     public Command runWrist(RobotState state) {
         return runOnce(() -> {
+            System.out.println("JOHN");
             manuSpeed = state.manipulatorSpeed;
          });
     }
@@ -137,8 +143,7 @@ public class Manipulator extends SubsystemBase {
             targetTunable.get(),
             ControlType.kPosition, 
             0,
-            movingUp ? wristFeedforwardUp.calculate(Math.toRadians(positionMotor.getEncoder().getPosition()), 0.0) 
-                     : wristFeedforwardDown.calculate(Math.toRadians(positionMotor.getEncoder().getPosition()), 0.0)
+            (movingUp ? wristFeedforwardUp : wristFeedforwardDown).calculate(Math.toRadians(positionMotor.getEncoder().getPosition()), 0.0)
         );
     }
 }
