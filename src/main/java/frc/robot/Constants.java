@@ -88,10 +88,10 @@ public final class Constants {
         public static final PIDConstants TRANSLATION_CONSTANTS = new PIDConstants(1.0,0,0);
 
         /* Rotation Constants */
-        public static final PIDConstants ROTATION_CONSTANTS = new PIDConstants(1.5,0,0);
+        public static final PIDConstants ROTATION_CONSTANTS = new PIDConstants(1.25,0,0);
 
         /* Angle Motor PID Values */
-        public static final double ANGLE_P = 0.007; // 0.3
+        public static final double ANGLE_P = 0.1; // 0.3
         public static final double ANGLE_I = 0.0;
         public static final double ANGLE_D = 0.0;
         public static final double ANGLE_F = 0.0; // 12.0
