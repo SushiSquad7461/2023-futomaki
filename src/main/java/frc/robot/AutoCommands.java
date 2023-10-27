@@ -82,6 +82,21 @@ public class AutoCommands {
             CommandFactory.setRobotStateWristFirst(manipulator, elevator, RobotState.IDLE)
         ));
 
+        chooser.addOption("3 Piece", new SequentialCommandGroup(
+            CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CONE),
+            new WaitCommand(0.25),
+            manipulator.reverseCurrentWrist(),
+            new WaitCommand(0.5),
+            CommandFactory.setRobotStateWristFirst(manipulator, elevator, RobotState.IDLE),
+            makeAuto("2piece"),
+            CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CUBE),
+            new WaitCommand(0.25),
+            manipulator.reverseCurrentWrist(),
+            new WaitCommand(0.5),
+            CommandFactory.setRobotStateWristFirst(manipulator, elevator, RobotState.IDLE),
+            makeAuto("3 piece")
+        ));
+
         chooser.addOption("Charge Blue", new SequentialCommandGroup(
             CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CONE),
             new WaitCommand(0.5),
