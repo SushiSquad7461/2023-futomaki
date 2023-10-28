@@ -70,9 +70,9 @@ public class AutoCommands {
         
         chooser.addOption("2 Piece", new SequentialCommandGroup(
             CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CONE),
-            new WaitCommand(0.25),
-            manipulator.reverseCurrentWrist(),
             new WaitCommand(0.5),
+            manipulator.reverseCurrentWrist(),
+            new WaitCommand(0.4),
             CommandFactory.setRobotStateWristFirst(manipulator, elevator, RobotState.IDLE),
             makeAuto("2piece"),
             CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CUBE),
@@ -84,15 +84,15 @@ public class AutoCommands {
 
         chooser.addOption("3 Piece", new SequentialCommandGroup(
             CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CONE),
-            new WaitCommand(0.25),
+            new WaitCommand(0.4),
             manipulator.reverseCurrentWrist(),
-            new WaitCommand(0.5),
+            new WaitCommand(0.3),
             CommandFactory.setRobotStateWristFirst(manipulator, elevator, RobotState.IDLE),
             makeAuto("2piece"),
             CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CUBE),
             new WaitCommand(0.25),
             manipulator.reverseCurrentWrist(),
-            new WaitCommand(0.5),
+            new WaitCommand(0.4),
             CommandFactory.setRobotStateWristFirst(manipulator, elevator, RobotState.IDLE),
             makeAuto("3 piece")
         ));
