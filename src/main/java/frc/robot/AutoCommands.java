@@ -54,6 +54,11 @@ public class AutoCommands {
         
         chooser.addOption("nothing", new InstantCommand(() -> {}));
 
+        chooser.addOption("Square", makeAuto("Square", 4.0));
+
+        chooser.addOption("line", makeAuto("line", 4.0));
+
+
         chooser.addOption("One piece", new SequentialCommandGroup(
             new InstantCommand(() -> swerve.setOdomPose(new Pose2d(new Translation2d(0,0), Rotation2d.fromDegrees(180)))),
             CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CONE),
@@ -66,9 +71,30 @@ public class AutoCommands {
         chooser.addOption("2 Piece", new SequentialCommandGroup(
             CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CONE),
             new WaitCommand(0.5),
+            manipulator.reverseCurrentWrist(),
+            new WaitCommand(0.4),
             CommandFactory.setRobotStateWristFirst(manipulator, elevator, RobotState.IDLE),
             makeAuto("2piece"),
-            CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CONE)
+            CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CUBE),
+            new WaitCommand(0.5),
+            manipulator.reverseCurrentWrist(),
+            new WaitCommand(0.5),
+            CommandFactory.setRobotStateWristFirst(manipulator, elevator, RobotState.IDLE)
+        ));
+
+        chooser.addOption("3 Piece", new SequentialCommandGroup(
+            CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CONE),
+            new WaitCommand(0.4),
+            manipulator.reverseCurrentWrist(),
+            new WaitCommand(0.3),
+            CommandFactory.setRobotStateWristFirst(manipulator, elevator, RobotState.IDLE),
+            makeAuto("2piece"),
+            CommandFactory.setRobotStateElevatorFirst(manipulator, elevator, RobotState.L3_CUBE),
+            new WaitCommand(0.25),
+            manipulator.reverseCurrentWrist(),
+            new WaitCommand(0.4),
+            CommandFactory.setRobotStateWristFirst(manipulator, elevator, RobotState.IDLE),
+            makeAuto("3 piece")
         ));
 
         chooser.addOption("Charge Blue", new SequentialCommandGroup(

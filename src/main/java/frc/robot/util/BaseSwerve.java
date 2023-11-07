@@ -49,7 +49,7 @@ abstract public class BaseSwerve extends SubsystemBase {
         driveRobotOriented(
             new Translation2d(
                 chassisSpeeds.vxMetersPerSecond,
-                chassisSpeeds.vyMetersPerSecond
+                -chassisSpeeds.vyMetersPerSecond // TODO: FIX SHITY NEGATION 
             ),
             chassisSpeeds.omegaRadiansPerSecond
         );

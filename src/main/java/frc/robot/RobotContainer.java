@@ -8,6 +8,7 @@ import frc.robot.Constants.RobotState;
 import frc.robot.commands.AutoBalance;
 import frc.robot.commands.CommandFactory;
 import frc.robot.commands.TeleopSwerveDrive;
+import frc.robot.subsystems.BuddyClimb;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Swerve;
@@ -30,7 +31,7 @@ public class RobotContainer {
   private final Elevator elevator;
   private final Swerve swerve;
   private final AutoCommands autos;
-  // private final BuddyClimb climb;
+  private final BuddyClimb climb;
 
   private final SendableChooser<Command> scoreChooser;
 
@@ -40,7 +41,7 @@ public class RobotContainer {
     manipulator = Manipulator.getInstance();
     swerve = Swerve.getInstance();
     autos = new AutoCommands(swerve, manipulator, elevator);
-    // climb = BuddyClimb.getInstance(); 
+    climb = BuddyClimb.getInstance(); 
 
     scoreChooser = new SendableChooser<Command>();
     setupScoreChooser();
@@ -79,9 +80,9 @@ public class RobotContainer {
     oi.getOperatorController().a().onTrue(new InstantCommand(() -> swerve.resetGyro()));
     oi.getOperatorController().x().onTrue(manipulator.turnOfSpeed());
 
-    // climb.setDefaultCommand(
-    //   new InstantCommand(() -> climb.setSpeed(oi.getOperatorController().getLeftY()), climb)
-    // );
+    climb.setDefaultCommand(
+      new InstantCommand(() -> climb.setSpeed(oi.getOperatorController().getLeftY()), climb)
+    );
   }
 
   private void setupScoreChooser() {

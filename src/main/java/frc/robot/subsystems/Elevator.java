@@ -71,16 +71,10 @@ public class Elevator extends SubsystemBase {
 
     public Command moveElevator(RobotState state) {
         return new SequentialCommandGroup(
-            run(
+            runOnce(
                 () -> {
-                    if (state.elevatorPos > getPose()) {
-                        up = true;
-                        rightElevator.getPIDController().setP(Constants.kElevator.kP_UP);
-                    } else {
-                        up = false;
-                        rightElevator.getPIDController().setP(Constants.kElevator.kP_DOWN);
-                    }
-
+                    up = state.elevatorPos > getPose();
+                    rightElevator.getPIDController().setP(up ? Constants.kElevator.kP_UP : Constants.kElevator.kP_DOWN);
                     setpoint.setDefault(state.elevatorPos);
                 }
             ),
