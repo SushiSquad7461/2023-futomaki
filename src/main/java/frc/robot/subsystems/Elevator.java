@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -33,10 +32,7 @@ public class Elevator extends SubsystemBase {
 
 
     private static Elevator instance;
-
     private boolean resetElevator;
-
-    private final DigitalInput hello = new DigitalInput(9);
 
     public static Elevator getInstance() {
         if (instance == null) {
@@ -57,10 +53,6 @@ public class Elevator extends SubsystemBase {
         leftElevator.follow(rightElevator, true);
 
         resetElevator = false;
-
-        // Setup Motion Majic, this is used to reduce jerk in the elevator ???
-        // rightElevator.getPIDController().setSmartMotionMaxVelocity(100, 0); // Velocity is in RPM
-        // rightElevator.getPIDController().setSmartMotionMaxAccel(10, 0); // Acel in RPM^2
 
         if (Constants.kTuningMode) {
             pid = new PIDTuning("Elevator", kElevator.kP_UP, kElevator.kI, kElevator.kD, Constants.kTuningMode);
@@ -106,28 +98,20 @@ public class Elevator extends SubsystemBase {
     }
 
     public BooleanSupplier closeToSetpoint(double setpoint) {
-        return () -> (getError(setpoint) < 5);
+        return () -> (getError(setpoint) < kElevator.MAX_ERROR);
     }
 
     public double getPose() {
         return rightElevator.getEncoder().getPosition();
     }
 
-
-
     @Override
     public void periodic() {
-        // SmartDashboard.putNumber("Eleavator Current", rightElevator.getOutputCurrent());
         SmartDashboard.putNumber("Elevator Position", rightElevator.getEncoder().getPosition());
-        // SmartDashboard.putNumber("Elevator Setpoint", setpoint.get());
-        SmartDashboard.putNumber("Elebator error", getError(setpoint.get()));
-
-        SmartDashboard.putBoolean("Hrllo ", hello.get());
 
         if (Constants.kTuningMode) {
             pid.updatePID(rightElevator);
         }
-
 
         if (!resetElevator) {
             rightElevator.getPIDController().setReference(

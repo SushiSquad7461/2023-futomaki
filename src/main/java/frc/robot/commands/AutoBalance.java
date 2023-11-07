@@ -25,13 +25,11 @@ public class AutoBalance extends CommandBase {
         addRequirements(swerve);
     }
 
-    // Called when the command is initially scheduled.
     @Override
     public void initialize() {
         initialTilt = new Translation2d(getRoll(), getPitch());
     }
 
-    // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
         tilt = new Translation2d(getRoll(), getPitch());
@@ -50,23 +48,13 @@ public class AutoBalance extends CommandBase {
         }
     }
 
-    // Called once the command ends or is interrupted.
     @Override
-    public void end(boolean interrupted) {
-        swerve.drive(new Translation2d(0, 0), 0.1);
-    }
+    public void end(boolean interrupted) { swerve.drive(new Translation2d(0, 0), 0.1); }
 
-    // Returns true when the command should end.
     @Override
-    public boolean isFinished() {
-        return tilt.getNorm() < kAutoBalance.FLATNESS_THRESHOLD_DEGREES;
-    }
+    public boolean isFinished() { return tilt.getNorm() < kAutoBalance.FLATNESS_THRESHOLD_DEGREES; }
 
-    private double getRoll() {
-        return ((Pigeon) swerve.getGyro()).getRoll();
-    }
+    private double getRoll() { return ((Pigeon) swerve.getGyro()).getRoll(); }
 
-    private double getPitch() {
-        return ((Pigeon) swerve.getGyro()).getPitch();
-    }
+    private double getPitch() { return ((Pigeon) swerve.getGyro()).getPitch(); }
 }

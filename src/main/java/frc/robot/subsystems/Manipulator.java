@@ -80,7 +80,7 @@ public class Manipulator extends SubsystemBase {
     }
 
     public BooleanSupplier closeToSetpoint(double setpoint) {
-        return () -> (getError(setpoint) < 5);
+        return () -> (getError(setpoint) < kManipulator.MAX_ERROR);
     }
 
     public double getAbsoluteError(){
@@ -89,17 +89,12 @@ public class Manipulator extends SubsystemBase {
 
     public Command runWrist(RobotState state) {
         return runOnce(() -> {
-            System.out.println("JOHN");
             manuSpeed = state.manipulatorSpeed;
          });
     }
 
     public Command reverseCurrentWrist() {
-        // Double check if applied output is right shit
-        return runOnce(() -> {
-            System.out.println("In Reverser Wrist");
-            manuSpeed = manuSpeed * -1;
-        });
+        return runOnce(() -> manuSpeed = manuSpeed * -1);
     }
 
     public double getError(double setpoint) {
@@ -115,31 +110,24 @@ public class Manipulator extends SubsystemBase {
     }
 
     public Command turnOfSpeed() {
-        return runOnce(() -> {
-            manuSpeed = 0.0;
-        });
+        return runOnce(() -> manuSpeed = 0.0);
     }
 
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Wrist Position", positionMotor.getEncoder().getPosition());
-        SmartDashboard.putNumber("Wrist error", getError(targetTunable.get()));
-        // SmartDashboard.putNumber("Wrist Setpoint", targetTunable.get());
-        // SmartDashboard.putNumber("Absolute Position", absoluteEncoder.getPosition());
-        // SmartDashboard.putNumber("Manipulator Current", spinMotor.getOutputCurrent());
 
         if(Constants.kTuningMode) {
             pid.updatePID(positionMotor);
         }
 
-        if (getAbsoluteError() > kManipulator.ERROR_LIMIT) { // figure out why cmomenting this out is breaking
+        if (getAbsoluteError() > kManipulator.ERROR_LIMIT) {
             resetWristPos();
         }
 
         spinMotor.set(manuSpeed);
 
         positionMotor.getPIDController().setReference(
-            // (targetTunable.get() > kManipulator.TUNE_HIGH_VAL || targetTunable.get() < kManipulator.TUNE_LOW_VAL) ? kManipulator.DEFUALT_VAL: targetTunable.get(), 
             targetTunable.get(),
             ControlType.kPosition, 
             0,

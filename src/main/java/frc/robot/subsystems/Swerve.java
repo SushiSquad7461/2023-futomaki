@@ -1,12 +1,12 @@
 package frc.robot.subsystems;
 
 import SushiFrcLib.Sensors.gyro.Pigeon;
+import SushiFrcLib.Swerve.BaseSwerve;
 import SushiFrcLib.Swerve.SwerveModules.SwerveModuleNeoFalcon;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.Constants.kPorts;
 import frc.robot.Constants.kSwerve;
-import frc.robot.util.BaseSwerve;
 
 public class Swerve extends BaseSwerve {
     private static Swerve instance;
