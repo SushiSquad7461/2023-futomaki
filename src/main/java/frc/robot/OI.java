@@ -36,7 +36,7 @@ public class OI {
     }
 
     public double getDriveTrainTranslationX() {
-        return getRawAxis(kOI.DRIVE_TRANSLATION_X);
+        return -getRawAxis(kOI.DRIVE_TRANSLATION_X);
     }
 
     private double getRawAxis(int id) {
