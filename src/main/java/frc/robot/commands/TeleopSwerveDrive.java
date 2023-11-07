@@ -59,11 +59,10 @@ public class TeleopSwerveDrive extends CommandBase {
     @Override
     public void execute() {
         double forwardBack = yaxisSupplier.get() * speedMultiplier.get();
-        double leftRight = -xaxisSupplier.get()  * speedMultiplier.get();
-        double rot = (rotSupplier.get()) * speedMultiplier.get();
+        double leftRight = xaxisSupplier.get()  * speedMultiplier.get();
+        double rot = rotSupplier.get() * speedMultiplier.get();
 
         forwardBack = Normalization.applyDeadband(forwardBack, Constants.STICK_DEADBAND);
-
         leftRight = Normalization.applyDeadband(leftRight, Constants.STICK_DEADBAND);
 
         Translation2d translation = new Translation2d(forwardBack, leftRight);
