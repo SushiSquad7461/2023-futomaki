@@ -58,10 +58,13 @@ public final class Constants {
         public static final double DEFUALT_VAL = RobotState.IDLE.elevatorPos;
 
         public static final int CURRENT_LIMIT = 40;
+        public static final double MAX_ERROR = 5;
     }
     
     public static final class kBuddyClimb {
       public static final int BUDDY_CLIMB_MOTOR_ID = 30;
+      public static final int DOWN_CURRENT_LIMIT = 40;
+      public static final int UP_CURRENT_LIMIT = 1;
     }
 
     public static final class kSwerve {
@@ -165,7 +168,7 @@ public final class Constants {
 
   public static class kAutoBalance {
     public static final double FLATNESS_THRESHOLD_DEGREES = 0.15;
-    public static final double MAX_TILT_CHANGE_DIVIDER = 10; // TODO: Name better
+    public static final double MAX_TILT_CHANGE_DIVIDER = 10;
     public static final double MAX_SPEED = Constants.kSwerve.MAX_SPEED * 0.0085;
   }
 
@@ -180,7 +183,7 @@ public final class Constants {
     L3_CUBE(45,25,0.5),
     L1_CONE(3,60,-1.0),
     L2_CONE(18.8,23,-1.0
-    ), // 45 -70
+    ), 
     L3_CONE(45,-10,-0.5);
 
 
