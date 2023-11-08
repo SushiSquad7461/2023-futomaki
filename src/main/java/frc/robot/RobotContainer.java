@@ -31,7 +31,7 @@ public class RobotContainer {
   private final Elevator elevator;
   private final Swerve swerve;
   private final AutoCommands autos;
-  private final BuddyClimb climb;
+  // private final BuddyClimb climb;
 
   private final SendableChooser<Command> scoreChooser;
 
@@ -41,7 +41,7 @@ public class RobotContainer {
     manipulator = Manipulator.getInstance();
     swerve = Swerve.getInstance();
     autos = new AutoCommands(swerve, manipulator, elevator);
-    climb = BuddyClimb.getInstance(); 
+    // climb = BuddyClimb.getInstance(); 
 
     scoreChooser = new SendableChooser<Command>();
     setupScoreChooser();
@@ -56,7 +56,7 @@ public class RobotContainer {
           () -> oi.getDriveTrainTranslationX(),
           () -> oi.getDriveTrainTranslationY(),
           () -> oi.getDriveTrainRotation(),
-          () -> elevator.getPose() > 20 ? 0.5 : 1.0
+          () -> elevator.getPose() > 20 ? 0.7 : 1.0
       )
     );
 
@@ -64,7 +64,10 @@ public class RobotContainer {
     oi.getDriverController().leftTrigger().onTrue(CommandFactory.setRobotState(manipulator, elevator, RobotState.GROUND_CUBE)).onFalse(CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
     oi.getDriverController().rightBumper().onTrue(CommandFactory.setRobotState(manipulator, elevator, RobotState.SINGLE_CONE)).onFalse(CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
 
-    oi.getDriverController().b().onTrue(new InstantCommand(() -> swerve.turnOnLocationLock(270), swerve)).onFalse(new InstantCommand(() -> swerve.turnOfLocationLock(), swerve));
+    oi.getDriverController().b().onTrue(new InstantCommand(() -> swerve.turnOnLocationLock(90
+    
+    
+    ), swerve)).onFalse(new InstantCommand(() -> swerve.turnOfLocationLock(), swerve));
     oi.getDriverController().x().onTrue(new InstantCommand(() -> swerve.turnOnLocationLock(180), swerve)).onFalse(new InstantCommand(() -> swerve.turnOfLocationLock(), swerve));
 
     oi.getDriverController().povUp().onTrue(new InstantCommand(() -> swerve.turnOnLocationLock(0), swerve)).onFalse(new InstantCommand(() -> swerve.turnOfLocationLock(), swerve));
@@ -80,9 +83,9 @@ public class RobotContainer {
     oi.getOperatorController().a().onTrue(new InstantCommand(() -> swerve.resetGyro()));
     oi.getOperatorController().x().onTrue(manipulator.turnOfSpeed());
 
-    climb.setDefaultCommand(
-      new InstantCommand(() -> climb.setSpeed(oi.getOperatorController().getLeftY()), climb)
-    );
+    // climb.setDefaultCommand(
+    //   new InstantCommand(() -> climb.setSpeed(oi.getOperatorController().getLeftY()), climb)
+    // );
   }
 
   private void setupScoreChooser() {

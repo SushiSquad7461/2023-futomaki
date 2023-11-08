@@ -26,11 +26,12 @@ public class BuddyClimb extends SubsystemBase {
         anujIsASmallBitch.setInverted(true);
     }
 
+    
     public void setSpeed(double speed) {
         if (speed > 0) {
-            anujIsASmallBitch.setSmartCurrentLimit(1);
+            anujIsASmallBitch.setSmartCurrentLimit(3);
         } else {
-            anujIsASmallBitch.setSmartCurrentLimit(80);
+            anujIsASmallBitch.setSmartCurrentLimit(40);
         }
         anujIsASmallBitch.set(speed);
     }

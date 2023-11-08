@@ -138,7 +138,7 @@ public final class Constants {
 
     public static final double MANIPULATOR_GEAR_RATIO = 160/3; //160:3
     public static final int ENCODER_CHANNEL = 5;
-    public static final double ENCODER_ANGLE_OFFSET = -77.100446;
+    public static final double ENCODER_ANGLE_OFFSET = -153.775085; // 77.100446
 
     public static final int SPIN_CURRENT_LIMIT = 30;
     public static final int POSITION_CURRENT_LIMIT = 40;
@@ -179,8 +179,7 @@ public final class Constants {
     L2_CUBE(25,15,0.5),
     L3_CUBE(45,25,0.5),
     L1_CONE(3,60,-1.0),
-    L2_CONE(18.8,23,-1.0
-    ), // 45 -70
+    L2_CONE(24,13,-1.0), // 45 -70
     L3_CONE(45,-10,-0.5);
 
 
