@@ -108,7 +108,7 @@ public final class Constants {
         /* Swerve Profiling Values */
         public static final double MAX_SPEED = 5; // 5 meters per second
         public static final double MAX_ACCELERATION = 4; // 4
-        public static final double MAX_ANGULAR_VELOCITY = 10; // 11.5
+        public static final double MAX_ANGULAR_VELOCITY = 2 * Math.PI; // 11.5
         public static final double MAX_ANGULAR_ACCELERATION = 20; // 11.5
 
         /* Motor Inverts */
@@ -118,7 +118,7 @@ public final class Constants {
         /* Angle Encoder Invert */
         public static final boolean CANCODER_INVERSION = true;
 
-        public static final boolean SWERVE_TUNNING_MODE = false;
+        public static final boolean SWERVE_TUNNING_MODE = true;
 
         public static final SwerveModuleConstants MOD0_CONSTANTS = new FutomakiSwerveModule(0, 159.9, SDSModules.MK4i);
         public static final SwerveModuleConstants MOD1_CONSTANTS = new FutomakiSwerveModule(1, 338.291, SDSModules.MK4i);
@@ -141,7 +141,7 @@ public final class Constants {
 
     public static final double MANIPULATOR_GEAR_RATIO = 160/3; //160:3
     public static final int ENCODER_CHANNEL = 5;
-    public static final double ENCODER_ANGLE_OFFSET = -77.100446;
+    public static final double ENCODER_ANGLE_OFFSET = -153.77;
 
     public static final int SPIN_CURRENT_LIMIT = 30;
     public static final int POSITION_CURRENT_LIMIT = 40;
