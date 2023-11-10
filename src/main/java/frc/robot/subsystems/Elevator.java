@@ -8,7 +8,13 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import SushiFrcLib.Motor.MotorHelper;
 import SushiFrcLib.SmartDashboard.PIDTuning;
 import SushiFrcLib.SmartDashboard.TunableNumber;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.controller.LinearQuadraticRegulator;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,9 +29,8 @@ public class Elevator extends SubsystemBase {
     private final CANSparkMax leftElevator;
     private final CANSparkMax rightElevator;
 
-    private PIDTuning pid;
-
     private final TunableNumber setpoint;
+
     private final ElevatorFeedforward ffd;
     private final ElevatorFeedforward ffu;
     private static boolean up;
@@ -33,6 +38,8 @@ public class Elevator extends SubsystemBase {
 
     private static Elevator instance;
     private boolean resetElevator;
+    
+    private final LinearQuadraticRegulator<N2, N1, N2> lqr;
 
     public static Elevator getInstance() {
         if (instance == null) {
@@ -43,8 +50,35 @@ public class Elevator extends SubsystemBase {
     }
 
     private Elevator() {
+        double gearRatio = 18; // fuck ass random number
+        double radius = 2; // fuck ass random number in meters tho
+        double mass = 100; // fuck ass random number in kg tho
+
+        double velocityTerm = 
+            (-1 * (gearRatio * gearRatio * DCMotor.getNEO(2).KtNMPerAmp)) / 
+            (DCMotor.getNEO(2).rOhms * radius * radius * mass * DCMotor.getNEO(2).KvRadPerSecPerVolt);
+
+        double voltageTerm = (gearRatio * DCMotor.getNEO(2).KtNMPerAmp) / (DCMotor.getNEO(2).rOhms * radius * mass);
+
+        lqr = new LinearQuadraticRegulator<N2, N1, N2>(
+            Matrix.mat(Nat.N2(), Nat.N2()).fill(
+                0,1,0, velocityTerm
+            ),
+            Matrix.mat(Nat.N2(), Nat.N1()).fill(
+                0, voltageTerm
+            ), 
+            Matrix.mat(Nat.N2(), Nat.N2()).fill(
+                5,0,0,5
+            ), 
+            Matrix.mat(Nat.N1(), Nat.N1()).fill(
+                1,0,0,1
+            ),
+            0.002 
+        );
+
         ffd = new ElevatorFeedforward(0, kElevator.kG_DOWN, 0);
         ffu = new ElevatorFeedforward(0, kElevator.kG_UP, 0);
+
         up = true;
 
         leftElevator = MotorHelper.createSparkMax(kElevator.LEFT_MOTOR_ID, MotorType.kBrushless, false, kElevator.CURRENT_LIMIT, IdleMode.kBrake);
@@ -54,9 +88,8 @@ public class Elevator extends SubsystemBase {
 
         resetElevator = false;
 
-        if (Constants.kTuningMode) {
-            pid = new PIDTuning("Elevator", kElevator.kP_UP, kElevator.kI, kElevator.kD, Constants.kTuningMode);
-        }
+        rightElevator.getEncoder().setPositionConversionFactor(0.0);
+        rightElevator.getEncoder().setVelocityConversionFactor(0.0);
       
         setpoint = new TunableNumber("Elavator Setpoint", kElevator.DEFUALT_VAL, Constants.kTuningMode);
     }
@@ -66,7 +99,6 @@ public class Elevator extends SubsystemBase {
             runOnce(
                 () -> {
                     up = state.elevatorPos > getPose();
-                    rightElevator.getPIDController().setP(up ? Constants.kElevator.kP_UP : Constants.kElevator.kP_DOWN);
                     setpoint.setDefault(state.elevatorPos);
                 }
             ),
@@ -109,16 +141,13 @@ public class Elevator extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Elevator Position", rightElevator.getEncoder().getPosition());
 
-        if (Constants.kTuningMode) {
-            pid.updatePID(rightElevator);
-        }
-
         if (!resetElevator) {
-            rightElevator.getPIDController().setReference(
-                setpoint.get() > kElevator.MAX_POS || setpoint.get() < kElevator.MIN_POS ? kElevator.DEFUALT_VAL : setpoint.get(),
-                CANSparkMax.ControlType.kPosition,
-                0,
-                up ? ffu.calculate(0.0) : ffd.calculate(0.0)
+            rightElevator.setVoltage(
+                lqr.calculate(
+                    Matrix.mat(Nat.N2(), Nat.N1()).fill(rightElevator.getEncoder().getPosition(), rightElevator.getEncoder().getVelocity()),
+                    Matrix.mat(Nat.N2(), Nat.N1()).fill(setpoint.get(), 0)
+                ).get(0, 0) + // SETPOINT IS NOW IN METERS REMBER THAT JOHN
+                (up ? ffu.calculate(0.0) : ffd.calculate(0.0))
             );
         }
     }
