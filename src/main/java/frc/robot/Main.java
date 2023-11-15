@@ -15,6 +15,7 @@ public final class Main {
   private Main() {}
 
   public static void main(String... args) {
+    // TODO -- L non custom robot name 👎
     RobotBase.startRobot(Robot::new);
   }
 }

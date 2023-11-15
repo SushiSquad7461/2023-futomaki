@@ -9,7 +9,6 @@ import SushiFrcLib.Motor.MotorHelper;
 import SushiFrcLib.SmartDashboard.PIDTuning;
 import SushiFrcLib.SmartDashboard.TunableNumber;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -43,22 +42,22 @@ public class Elevator extends SubsystemBase {
     }
 
     private Elevator() {
-        ffd = new ElevatorFeedforward(0, kElevator.kG_DOWN, 0);
-        ffu = new ElevatorFeedforward(0, kElevator.kG_UP, 0);
+        ffd = new ElevatorFeedforward(0, kElevator.G_DOWN, 0);
+        ffu = new ElevatorFeedforward(0, kElevator.G_UP, 0);
         up = true;
 
         leftElevator = MotorHelper.createSparkMax(kElevator.LEFT_MOTOR_ID, MotorType.kBrushless, false, kElevator.CURRENT_LIMIT, IdleMode.kBrake);
-        rightElevator = MotorHelper.createSparkMax(kElevator.RIGHT_MOTOR_ID, MotorType.kBrushless, true, kElevator.CURRENT_LIMIT, IdleMode.kBrake, Constants.kElevator.kP_UP, Constants.kElevator.kI, Constants.kElevator.kD, 0.0);
+        rightElevator = MotorHelper.createSparkMax(kElevator.RIGHT_MOTOR_ID, MotorType.kBrushless, true, kElevator.CURRENT_LIMIT, IdleMode.kBrake, kElevator.P_UP, kElevator.I, kElevator.D, 0.0);
 
         leftElevator.follow(rightElevator, true);
 
         resetElevator = false;
 
-        if (Constants.kTuningMode) {
-            pid = new PIDTuning("Elevator", kElevator.kP_UP, kElevator.kI, kElevator.kD, Constants.kTuningMode);
+        if (Constants.TUNING_MODE) {
+            pid = new PIDTuning("Elevator", kElevator.P_UP, kElevator.I, kElevator.D, Constants.TUNING_MODE);
         }
       
-        setpoint = new TunableNumber("Elavator Setpoint", kElevator.DEFUALT_VAL, Constants.kTuningMode);
+        setpoint = new TunableNumber("Elavator Setpoint", kElevator.DEFUALT_VAL, Constants.TUNING_MODE);
     }
 
     public Command moveElevator(RobotState state) {
@@ -66,7 +65,7 @@ public class Elevator extends SubsystemBase {
             runOnce(
                 () -> {
                     up = state.elevatorPos > getPose();
-                    rightElevator.getPIDController().setP(up ? Constants.kElevator.kP_UP : Constants.kElevator.kP_DOWN);
+                    rightElevator.getPIDController().setP(up ? kElevator.P_UP : kElevator.P_DOWN);
                     setpoint.setDefault(state.elevatorPos);
                 }
             ),
@@ -74,6 +73,7 @@ public class Elevator extends SubsystemBase {
         );
     }
 
+    // TODO I'd recommend making reset sequences a bit more fool-proof. Too easy to make a mistake and call reset start without calling reset end
     public Command resetElevatorPoseStart() {
         return runOnce(
             () -> {
@@ -109,7 +109,7 @@ public class Elevator extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Elevator Position", rightElevator.getEncoder().getPosition());
 
-        if (Constants.kTuningMode) {
+        if (Constants.TUNING_MODE) {
             pid.updatePID(rightElevator);
         }
 

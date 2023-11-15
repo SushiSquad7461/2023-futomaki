@@ -2,8 +2,6 @@ package frc.robot;
 
 import java.util.HashMap;
 
-import javax.sound.midi.Sequencer;
-
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 

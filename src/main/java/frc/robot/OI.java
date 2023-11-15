@@ -4,8 +4,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.kOI;
 
 /** 
- * Handels xbox controllers.
+ * Handles xbox controllers.
 */
+// TODO Could just add this to sushi lib, and maybe either make method names more terse or even make straight methods for each button like getDriverA()
 public class OI {
     private CommandXboxController driverController;
     private CommandXboxController operatorController;
