@@ -50,9 +50,9 @@ public class Elevator extends SubsystemBase {
     }
 
     private Elevator() {
-        double gearRatio = 18; // fuck ass random number
-        double radius = 2; // fuck ass random number in meters tho
-        double mass = 100; // fuck ass random number in kg tho
+        double gearRatio = 9.0; // fuck ass random number
+        double radius = 4.16 / 100.0; // fuck ass random number in meters tho
+        double mass = 5; // fuck ass random number in kg tho
 
         double velocityTerm = 
             (-1 * (gearRatio * gearRatio * DCMotor.getNEO(2).KtNMPerAmp)) / 
@@ -88,8 +88,8 @@ public class Elevator extends SubsystemBase {
 
         resetElevator = false;
 
-        rightElevator.getEncoder().setPositionConversionFactor(0.0);
-        rightElevator.getEncoder().setVelocityConversionFactor(0.0);
+        rightElevator.getEncoder().setPositionConversionFactor(((radius * Math.PI * 2.0) / gearRatio) / gearRatio);
+        rightElevator.getEncoder().setVelocityConversionFactor(((radius * Math.PI * 2.0) / gearRatio) / 60.0);
       
         setpoint = new TunableNumber("Elavator Setpoint", kElevator.DEFUALT_VAL, Constants.kTuningMode);
     }
@@ -142,13 +142,13 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putNumber("Elevator Position", rightElevator.getEncoder().getPosition());
 
         if (!resetElevator) {
-            rightElevator.setVoltage(
-                lqr.calculate(
-                    Matrix.mat(Nat.N2(), Nat.N1()).fill(rightElevator.getEncoder().getPosition(), rightElevator.getEncoder().getVelocity()),
-                    Matrix.mat(Nat.N2(), Nat.N1()).fill(setpoint.get(), 0)
-                ).get(0, 0) + // SETPOINT IS NOW IN METERS REMBER THAT JOHN
-                (up ? ffu.calculate(0.0) : ffd.calculate(0.0))
-            );
+            // rightElevator.setVoltage(
+            //     lqr.calculate(
+            //         Matrix.mat(Nat.N2(), Nat.N1()).fill(rightElevator.getEncoder().getPosition(), rightElevator.getEncoder().getVelocity()),
+            //         Matrix.mat(Nat.N2(), Nat.N1()).fill(setpoint.get(), 0)
+            //     ).get(0, 0) + // SETPOINT IS NOW IN METERS REMBER THAT JOHN
+            //     (up ? ffu.calculate(0.0) : ffd.calculate(0.0))
+            // );
         }
     }
 }
