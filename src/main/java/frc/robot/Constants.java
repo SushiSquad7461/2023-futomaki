@@ -47,7 +47,7 @@ public final class Constants {
         public static final double kP_DOWN = 0.04;
         public static final double kI = 0;
         public static final double kD = 0;
-        public static final double kG_DOWN = 0.3;
+        public static final double kG_DOWN = 0.3; //0.3
         public static final double kG_UP = 0.7;
 
         public static final int LEFT_MOTOR_ID = 22;
@@ -141,7 +141,7 @@ public final class Constants {
 
     public static final double MANIPULATOR_GEAR_RATIO = 160/3; //160:3
     public static final int ENCODER_CHANNEL = 5;
-    public static final double ENCODER_ANGLE_OFFSET = -77.100446;
+    public static final double ENCODER_ANGLE_OFFSET = -159.047821;
 
     public static final int SPIN_CURRENT_LIMIT = 30;
     public static final int POSITION_CURRENT_LIMIT = 40;

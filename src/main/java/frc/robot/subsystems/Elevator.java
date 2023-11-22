@@ -10,11 +10,15 @@ import SushiFrcLib.SmartDashboard.PIDTuning;
 import SushiFrcLib.SmartDashboard.TunableNumber;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.LinearQuadraticRegulator;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -39,7 +43,7 @@ public class Elevator extends SubsystemBase {
     private static Elevator instance;
     private boolean resetElevator;
     
-    private final LinearQuadraticRegulator<N2, N1, N2> lqr;
+    private final LinearQuadraticRegulator<N2, N1, N1> lqr;
 
     public static Elevator getInstance() {
         if (instance == null) {
@@ -51,8 +55,8 @@ public class Elevator extends SubsystemBase {
 
     private Elevator() {
         double gearRatio = 9.0; // fuck ass random number
-        double radius = 4.16 / 100.0; // fuck ass random number in meters tho
-        double mass = 5; // fuck ass random number in kg tho
+        double radius = 22.3 / 1000.0; // fuck ass random number in meters tho
+        double mass = 17.5; // fuck ass random number in kg tho
 
         double velocityTerm = 
             (-1 * (gearRatio * gearRatio * DCMotor.getNEO(2).KtNMPerAmp)) / 
@@ -60,7 +64,7 @@ public class Elevator extends SubsystemBase {
 
         double voltageTerm = (gearRatio * DCMotor.getNEO(2).KtNMPerAmp) / (DCMotor.getNEO(2).rOhms * radius * mass);
 
-        lqr = new LinearQuadraticRegulator<N2, N1, N2>(
+        lqr = new LinearQuadraticRegulator<N2, N1, N1>(
             Matrix.mat(Nat.N2(), Nat.N2()).fill(
                 0,1,0, velocityTerm
             ),
@@ -68,13 +72,29 @@ public class Elevator extends SubsystemBase {
                 0, voltageTerm
             ), 
             Matrix.mat(Nat.N2(), Nat.N2()).fill(
-                5,0,0,5
+                1 / Math.pow(Units.inchesToMeters(0.8), 2),0,0, 1 / Math.pow(Units.inchesToMeters(4), 2)
             ), 
             Matrix.mat(Nat.N1(), Nat.N1()).fill(
-                1,0,0,1
+                1 / Math.pow(12, 2)
             ),
-            0.002 
+            0.02 
         );
+
+        // lqr = new LinearQuadraticRegulator<N2, N1, N1>(
+        //     new LinearSystem<>(
+        //         Matrix.mat(Nat.N2(), Nat.N2()).fill(
+        //             0,1,0, velocityTerm
+        //         ),
+        //         Matrix.mat(Nat.N2(), Nat.N1()).fill(
+        //         0, voltageTerm
+        //         ),
+        //         Matrix.mat(Nat.N1(), Nat.N2()).fill(1, 0),
+        //         new Matrix<>(Nat.N1(), Nat.N1())
+        //     ),
+        //     VecBuilder.fill(Units.inchesToMeters(1.0), Units.inchesToMeters(4.0)), 
+        //     VecBuilder.fill(12.0), 
+        //     0.02
+        // );
 
         ffd = new ElevatorFeedforward(0, kElevator.kG_DOWN, 0);
         ffu = new ElevatorFeedforward(0, kElevator.kG_UP, 0);
@@ -88,10 +108,10 @@ public class Elevator extends SubsystemBase {
 
         resetElevator = false;
 
-        rightElevator.getEncoder().setPositionConversionFactor(((radius * Math.PI * 2.0) / gearRatio) / gearRatio);
-        rightElevator.getEncoder().setVelocityConversionFactor(((radius * Math.PI * 2.0) / gearRatio) / 60.0);
+        rightElevator.getEncoder().setPositionConversionFactor(1 / (31.856873 * 2.0));
+        rightElevator.getEncoder().setVelocityConversionFactor((1 / (31.856873 * 2.0)) / 60.0);
       
-        setpoint = new TunableNumber("Elavator Setpoint", kElevator.DEFUALT_VAL, Constants.kTuningMode);
+        setpoint = new TunableNumber("Elavator Setpoint", kElevator.DEFUALT_VAL * 1 / (31.856873 * 2.0), Constants.kTuningMode);
     }
 
     public Command moveElevator(RobotState state) {
@@ -99,10 +119,10 @@ public class Elevator extends SubsystemBase {
             runOnce(
                 () -> {
                     up = state.elevatorPos > getPose();
-                    setpoint.setDefault(state.elevatorPos);
+                    setpoint.setDefault(state.elevatorPos * (1 / (31.856873 * 2.0)));
                 }
             ),
-            new WaitUntilCommand(closeToSetpoint(state.elevatorPos))
+            new WaitUntilCommand(closeToSetpoint(state.elevatorPos * (1 / (31.856873 * 2.0))))
         );
     }
 
@@ -139,16 +159,18 @@ public class Elevator extends SubsystemBase {
 
     @Override
     public void periodic() {
+        SmartDashboard.putNumber("Elevator Setpoint", setpoint.get());
         SmartDashboard.putNumber("Elevator Position", rightElevator.getEncoder().getPosition());
 
         if (!resetElevator) {
-            // rightElevator.setVoltage(
-            //     lqr.calculate(
-            //         Matrix.mat(Nat.N2(), Nat.N1()).fill(rightElevator.getEncoder().getPosition(), rightElevator.getEncoder().getVelocity()),
-            //         Matrix.mat(Nat.N2(), Nat.N1()).fill(setpoint.get(), 0)
-            //     ).get(0, 0) + // SETPOINT IS NOW IN METERS REMBER THAT JOHN
-            //     (up ? ffu.calculate(0.0) : ffd.calculate(0.0))
-            // );
+            rightElevator.setVoltage(
+                lqr.calculate(
+                    Matrix.mat(Nat.N2(), Nat.N1()).fill(rightElevator.getEncoder().getPosition(), rightElevator.getEncoder().getVelocity()),
+                    Matrix.mat(Nat.N2(), Nat.N1()).fill(setpoint.get(), 0)
+                ).get(0, 0) + // SETPOINT IS NOW IN METERS REMBER THAT JOHN
+                // ffd.calculate(0.0)
+                (up ? ffu.calculate(0.0) : ffd.calculate(0.0))
+            );
         }
     }
 }
