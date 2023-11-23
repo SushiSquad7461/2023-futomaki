@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.RobotState;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Manipulator;
+import frc.robot.subsystems.manipulator.Manipulator;
 
 public class CommandFactory {
     public static Command setRobotState(Manipulator manipulator, Elevator elevator, RobotState state) {

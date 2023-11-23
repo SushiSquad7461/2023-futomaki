@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.manipulator;
 
 import java.util.function.BooleanSupplier;
 
@@ -21,18 +21,12 @@ import frc.robot.Constants.RobotState;
 import frc.robot.Constants.kManipulator;
 
 public class Manipulator extends SubsystemBase {
-    private final CANSparkMax spinMotor;
-    private final CANSparkMax positionMotor;
-
     private PIDTuning pid;
 
     private final ArmFeedforward wristFeedforwardUp;
     private final ArmFeedforward wristFeedforwardDown;
     private boolean movingUp;
 
-    private final AbsoluteEncoder absoluteEncoder;
-
-    private final TunableNumber targetTunable;
     private double manuSpeed;
 
     private static Manipulator instance;
@@ -45,20 +39,12 @@ public class Manipulator extends SubsystemBase {
     }
 
     private Manipulator() {
-        spinMotor = MotorHelper.createSparkMax(kManipulator.kSpinMotorID, MotorType.kBrushless, false,kManipulator.SPIN_CURRENT_LIMIT, IdleMode.kBrake);
-        positionMotor = MotorHelper.createSparkMax(kManipulator.kPositionMotorID, MotorType.kBrushless, false, kManipulator.POSITION_CURRENT_LIMIT, IdleMode.kBrake, kManipulator.kP_UP, kManipulator.kI, kManipulator.kD, 0.0);
-
         if (Constants.kTuningMode) {
             pid = new PIDTuning("Maniupaltor", kManipulator.kP_UP, kManipulator.kI, kManipulator.kD, Constants.kTuningMode);
         }
 
         wristFeedforwardUp = new ArmFeedforward(0.0, kManipulator.kG_UP, 0.0); 
         wristFeedforwardDown = new ArmFeedforward(0.0, kManipulator.kG_DOWN, 0.0); 
-
-        absoluteEncoder = new AbsoluteEncoder(kManipulator.ENCODER_CHANNEL, kManipulator.ENCODER_ANGLE_OFFSET);
-       
-        positionMotor.getEncoder().setPositionConversionFactor(360 / kManipulator.MANIPULATOR_GEAR_RATIO);
-        positionMotor.getEncoder().setVelocityConversionFactor((360 / kManipulator.MANIPULATOR_GEAR_RATIO) / 60);
 
         targetTunable = new TunableNumber("Wrist target", kManipulator.DEFUALT_VAL, Constants.kTuningMode);
         manuSpeed = 0.0;
