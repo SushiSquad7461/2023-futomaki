@@ -12,11 +12,12 @@ import java.util.function.Supplier;
 /**
  * Command that controls teleop swerve.
  */
+// TODO could prolly add this to sushi lib
 public class TeleopSwerveDrive extends CommandBase {
     private final Swerve swerve;
 
-    private final Supplier<Double> xaxisSupplier; 
-    private final Supplier<Double> yaxisSupplier;
+    private final Supplier<Double> xAxisSupplier; 
+    private final Supplier<Double> yAxisSupplier;
     private final Supplier<Double> rotSupplier;
     private final Supplier<Double> speedMultiplier;
 
@@ -24,14 +25,14 @@ public class TeleopSwerveDrive extends CommandBase {
      * Pass in defualt speed multiplier of 1.0
      */
     public TeleopSwerveDrive(Swerve swerve,
-        Supplier<Double> xaxisSupplier, 
-        Supplier<Double> yaxisSupplier, 
+        Supplier<Double> xAxisSupplier, 
+        Supplier<Double> yAxisSupplier, 
         Supplier<Double> rotSupplier
     ) {
         this(
             swerve,
-            xaxisSupplier,
-            yaxisSupplier,
+            xAxisSupplier,
+            yAxisSupplier,
             rotSupplier,
             () -> 1.0
         );
@@ -41,15 +42,16 @@ public class TeleopSwerveDrive extends CommandBase {
      * Set swerve subsytem, controlers, axis's, and other swerve paramaters.
      */
     public TeleopSwerveDrive(Swerve swerve,
-        Supplier<Double> xaxisSupplier, 
-        Supplier<Double> yaxisSupplier, 
+        Supplier<Double> xAxisSupplier, 
+        Supplier<Double> yAxisSupplier, 
         Supplier<Double> rotSupplier,
+        // TODO why not just have the max speed be passed in directly
         Supplier<Double> speedMultiplier
     ) {
         this.swerve = swerve;
 
-        this.xaxisSupplier = xaxisSupplier;
-        this.yaxisSupplier = yaxisSupplier;
+        this.xAxisSupplier = xAxisSupplier;
+        this.yAxisSupplier = yAxisSupplier;
         this.rotSupplier = rotSupplier;
         this.speedMultiplier = speedMultiplier;
 
@@ -58,8 +60,8 @@ public class TeleopSwerveDrive extends CommandBase {
 
     @Override
     public void execute() {
-        double forwardBack = yaxisSupplier.get() * speedMultiplier.get();
-        double leftRight = xaxisSupplier.get()  * speedMultiplier.get();
+        double forwardBack = yAxisSupplier.get() * speedMultiplier.get();
+        double leftRight = xAxisSupplier.get()  * speedMultiplier.get();
         double rot = rotSupplier.get() * speedMultiplier.get();
 
         forwardBack = Normalization.applyDeadband(forwardBack, Constants.STICK_DEADBAND);
@@ -67,6 +69,7 @@ public class TeleopSwerveDrive extends CommandBase {
 
         Translation2d translation = new Translation2d(forwardBack, leftRight);
 
+        // TODO more of a sushi lib thing but this is not a normalization, if anything just change this to calling the math pow directly
         rot = Normalization.cube(rot);
         rot *= kSwerve.MAX_ANGULAR_VELOCITY;
 

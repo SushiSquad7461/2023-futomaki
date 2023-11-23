@@ -56,7 +56,7 @@ public class RobotContainer {
           () -> oi.getDriveTrainTranslationX(),
           () -> oi.getDriveTrainTranslationY(),
           () -> oi.getDriveTrainRotation(),
-          () -> elevator.getPose() > 20 ? 0.5 : 1.0
+          () -> elevator.getPose() > 20 ? 0.5 : 1.0 // TODO hard coded values
       )
     );
 
@@ -64,12 +64,14 @@ public class RobotContainer {
     oi.getDriverController().leftTrigger().onTrue(CommandFactory.setRobotState(manipulator, elevator, RobotState.GROUND_CUBE)).onFalse(CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
     oi.getDriverController().rightBumper().onTrue(CommandFactory.setRobotState(manipulator, elevator, RobotState.SINGLE_CONE)).onFalse(CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
 
-    oi.getDriverController().b().onTrue(new InstantCommand(() -> swerve.turnOnLocationLock(270), swerve)).onFalse(new InstantCommand(() -> swerve.turnOfLocationLock(), swerve));
-    oi.getDriverController().x().onTrue(new InstantCommand(() -> swerve.turnOnLocationLock(180), swerve)).onFalse(new InstantCommand(() -> swerve.turnOfLocationLock(), swerve));
+    // TODO more hardcoded values
+    oi.getDriverController().b().onTrue(new InstantCommand(() -> swerve.enableRotationLock(270), swerve)).onFalse(new InstantCommand(() -> swerve.disableRotationLock(), swerve));
+    oi.getDriverController().x().onTrue(new InstantCommand(() -> swerve.enableRotationLock(180), swerve)).onFalse(new InstantCommand(() -> swerve.disableRotationLock(), swerve));
 
-    oi.getDriverController().povUp().onTrue(new InstantCommand(() -> swerve.turnOnLocationLock(0), swerve)).onFalse(new InstantCommand(() -> swerve.turnOfLocationLock(), swerve));
+    oi.getDriverController().povUp().onTrue(new InstantCommand(() -> swerve.enableRotationLock(0), swerve)).onFalse(new InstantCommand(() -> swerve.disableRotationLock(), swerve));
     oi.getDriverController().povDown().whileTrue(new AutoBalance());
 
+    // TODO what even is this
     oi.getDriverController().leftBumper().onTrue(new InstantCommand(() -> scoreChooser.getSelected().schedule())).onFalse(new SequentialCommandGroup(
       manipulator.reverseCurrentWrist(),
       new WaitCommand(1.0),
@@ -86,6 +88,7 @@ public class RobotContainer {
   }
 
   private void setupScoreChooser() {
+    // TODO I'd recommend exploring more intuitive/quick UI for operator controls, such as the button grids many teams implemented
     scoreChooser.addOption("L3 Cone", CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CONE));
     scoreChooser.addOption("L3 Cube", CommandFactory.setRobotState(manipulator, elevator, RobotState.L3_CUBE));
     scoreChooser.addOption("L2 Cone", CommandFactory.setRobotState(manipulator, elevator, RobotState.L2_CONE));

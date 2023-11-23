@@ -22,6 +22,7 @@ public class Robot extends TimedRobot {
   private Swerve swerve;
 
   private RobotContainer m_robotContainer;
+  // TODO I think you could probably afford to cache this value longer than 20ms
   private AllianceColor color;
 
   /**

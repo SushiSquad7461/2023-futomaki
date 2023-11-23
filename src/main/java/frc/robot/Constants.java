@@ -23,10 +23,11 @@ import frc.robot.util.FutomakiSwerveModule;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final boolean kTuningMode = false;
+    public static final boolean TUNING_MODE = false;
     public static final double STICK_DEADBAND = 0.1;
 
     public static final class kOI {
+        // TODO kind of silly to have to have a constant that references another constant
         public static final int DRIVE_TRANSLATION_Y = XboxController.Axis.kLeftY.value;
         public static final int DRIVE_TRANSLATION_X = XboxController.Axis.kLeftX.value;
         public static final int DRIVE_ROTATE = XboxController.Axis.kRightX.value;
@@ -38,17 +39,17 @@ public final class Constants {
     }
 
     public static class kPorts {
-        public static final String CANIVORE_NAME = "Sussy Squad";
+        public static final String CANIVORE_NAME = "Sussy Squad"; // 👀
         public static final int PIGEON_ID = 13;
     }
 
     public static class kElevator {
-        public static final double kP_UP = 0.1; // 0.03
-        public static final double kP_DOWN = 0.04;
-        public static final double kI = 0;
-        public static final double kD = 0;
-        public static final double kG_DOWN = 0.3;
-        public static final double kG_UP = 0.7;
+        public static final double P_UP = 0.1; // 0.03
+        public static final double P_DOWN = 0.04;
+        public static final double I = 0;
+        public static final double D = 0;
+        public static final double G_DOWN = 0.3;
+        public static final double G_UP = 0.7;
 
         public static final int LEFT_MOTOR_ID = 22;
         public static final int RIGHT_MOTOR_ID = 20;
@@ -120,6 +121,9 @@ public final class Constants {
 
         public static final boolean SWERVE_TUNNING_MODE = true;
 
+        // TODO why do the categorization comments stop here
+
+        // TODO: may be helpful to make more DTOs for stuff like these swerve constants, e.g. PID values, motor IDs, etc.
         public static final SwerveModuleConstants MOD0_CONSTANTS = new FutomakiSwerveModule(0, 159.9, SDSModules.MK4i);
         public static final SwerveModuleConstants MOD1_CONSTANTS = new FutomakiSwerveModule(1, 338.291, SDSModules.MK4i);
         public static final SwerveModuleConstants MOD2_CONSTANTS = new FutomakiSwerveModule(2, 178.33, SDSModules.MK4i);
@@ -127,17 +131,17 @@ public final class Constants {
     }
 
   public static class kManipulator {
-    public static final double kI = 0;
-    public static final double kD = 0;
+    public static final double I = 0;
+    public static final double D = 0;
 
-    public static final double kG_UP = 0.8; //0.2
-    public static final double kG_DOWN = 0.2;
+    public static final double G_UP = 0.8; //0.2
+    public static final double G_DOWN = 0.2;
 
-    public static final double kP_UP = 0.02; //set this
-    public static final double kP_DOWN = 0.015; //set this
+    public static final double P_UP = 0.02; //set this
+    public static final double P_DOWN = 0.015; //set this
 
-    public static final int kSpinMotorID = 24;
-    public static final int kPositionMotorID = 21;
+    public static final int SPIN_MOTOR_ID = 24;
+    public static final int POSITION_MOTOR_ID = 21;
 
     public static final double MANIPULATOR_GEAR_RATIO = 160/3; //160:3
     public static final int ENCODER_CHANNEL = 5;
@@ -182,8 +186,7 @@ public final class Constants {
     L2_CUBE(25,15,0.5),
     L3_CUBE(45,25,0.5),
     L1_CONE(3,60,-1.0),
-    L2_CONE(18.8,23,-1.0
-    ), 
+    L2_CONE(18.8,23,-1.0), 
     L3_CONE(45,-10,-0.5);
 
 

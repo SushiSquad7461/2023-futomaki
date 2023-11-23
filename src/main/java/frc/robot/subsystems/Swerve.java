@@ -12,7 +12,7 @@ public class Swerve extends BaseSwerve {
     private static Swerve instance;
 
     private boolean locationLock;
-    private PIDController locationLockPID;
+    private PIDController rotationLockPID;
 
     public static Swerve getInstance() {
         if (instance == null) {
@@ -37,34 +37,29 @@ public class Swerve extends BaseSwerve {
         );
 
         locationLock = false;
-        locationLockPID = new PIDController(
-            0.1, // sir this is not tunned pls retune like rn rnrnrnnrnrnrnrnrnrn 
+        rotationLockPID = new PIDController(
+            0.1, // sir this is not tunned pls retune like rn rnrnrnnrnrnrnrnrnrn TODO what
             0.0, 
             0.0
         );
     }
 
-    public void turnOnLocationLock(double angle) {
+    public void enableRotationLock(double angle) {
         locationLock = true;
 
-        locationLockPID.setSetpoint(angle);
-        locationLockPID.calculate(getGyro().getAngle().getDegrees());
+        rotationLockPID.setSetpoint(angle);
+        rotationLockPID.calculate(getGyro().getAngle().getDegrees());
     }
 
-    public void turnOfLocationLock() {
+    public void disableRotationLock() {
         locationLock = false;
     }
 
     public void driveWithRotationLock(Translation2d translation, double rotation) {
         if (locationLock) {
-            rotation = locationLockPID.calculate(getGyro().getAngle().getDegrees());
+            rotation = rotationLockPID.calculate(getGyro().getAngle().getDegrees());
         }
 
         drive(translation, rotation);
-    }
-
-    @Override
-    public void periodic() { 
-        super.periodic();
     }
 }

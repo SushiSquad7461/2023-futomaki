@@ -8,7 +8,6 @@ import SushiFrcLib.Sensors.gyro.Pigeon;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
 import frc.robot.Constants.kAutoBalance;
 import frc.robot.subsystems.Swerve;
 
@@ -42,7 +41,7 @@ public class AutoBalance extends CommandBase {
             (initialTilt.getNorm() - tilt.getNorm())
             > (initialTilt.getNorm() / kAutoBalance.MAX_TILT_CHANGE_DIVIDER))) {
 
-            swerve.driveRobotOriented(tilt.times(Constants.kAutoBalance.MAX_SPEED), 0);
+            swerve.driveRobotOriented(tilt.times(kAutoBalance.MAX_SPEED), 0);
         } else {
             swerve.driveRobotOriented(new Translation2d(0, 0), 0.1);
         }
@@ -54,6 +53,7 @@ public class AutoBalance extends CommandBase {
     @Override
     public boolean isFinished() { return tilt.getNorm() < kAutoBalance.FLATNESS_THRESHOLD_DEGREES; }
 
+    // TODO casting is cringe -- you are basically negating the genericism of your swerve drive
     private double getRoll() { return ((Pigeon) swerve.getGyro()).getRoll(); }
 
     private double getPitch() { return ((Pigeon) swerve.getGyro()).getPitch(); }
