@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.RobotState;
-import frc.robot.Constants.kSwerve;
 import frc.robot.Constants.kAuto;
 import frc.robot.commands.AutoBalance;
 import frc.robot.commands.CommandFactory;
@@ -40,8 +39,8 @@ public class AutoCommands {
         swerveAutoBuilder = new SwerveAutoBuilder(
             swerve::getOdomPose, 
             swerve::setOdomPose,
-            kSwerve.TRANSLATION_CONSTANTS, 
-            kSwerve.ROTATION_CONSTANTS, 
+            Constants.Swerve.TRANSLATION_CONSTANTS, 
+            Constants.Swerve.ROTATION_CONSTANTS, 
             swerve::drive, 
             eventMap,
             true,
@@ -110,11 +109,11 @@ public class AutoCommands {
     }
 
     private Command makeAuto(String path) {
-        return swerveAutoBuilder.fullAuto(PathPlanner.loadPathGroup(path, kSwerve.MAX_SPEED, kSwerve.MAX_ACCELERATION));
+        return swerveAutoBuilder.fullAuto(PathPlanner.loadPathGroup(path, Constants.Swerve.MAX_SPEED, Constants.Swerve.MAX_ACCELERATION));
     }
 
     private Command makeAuto(String path, double speed) {
-        return swerveAutoBuilder.fullAuto(PathPlanner.loadPathGroup(path, speed, kSwerve.MAX_ACCELERATION));
+        return swerveAutoBuilder.fullAuto(PathPlanner.loadPathGroup(path, speed,  Constants.Swerve.MAX_ACCELERATION));
     }
 
     public Command getAuto() {

@@ -1,11 +1,9 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.kBuddyClimb;
+import frc.robot.Constants;
 
 public class BuddyClimb extends SubsystemBase {
     private final CANSparkMax buddyClimb;
@@ -20,14 +18,11 @@ public class BuddyClimb extends SubsystemBase {
     }
 
     private BuddyClimb() {
-        buddyClimb = new CANSparkMax(kBuddyClimb.BUDDY_CLIMB_MOTOR_ID, MotorType.kBrushless);
-        buddyClimb.setSmartCurrentLimit(kBuddyClimb.UP_CURRENT_LIMIT);
-        buddyClimb.setIdleMode(IdleMode.kBrake);
-        buddyClimb.setInverted(true);
+        buddyClimb = Constants.BuddyClimb.MOTOR_CONFIG.createSparkMax();
     }
 
     public void setSpeed(double speed) {
-        buddyClimb.setSmartCurrentLimit(speed > 0 ? kBuddyClimb.UP_CURRENT_LIMIT : kBuddyClimb.DOWN_CURRENT_LIMIT);
+        buddyClimb.setSmartCurrentLimit(speed > 0 ? Constants.BuddyClimb.UP_CURRENT_LIMIT : Constants.BuddyClimb.UP_CURRENT_LIMIT);
         buddyClimb.set(speed);
     }
 }

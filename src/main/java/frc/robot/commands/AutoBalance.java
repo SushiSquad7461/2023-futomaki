@@ -4,7 +4,6 @@
 
 package frc.robot.commands;
 
-import SushiFrcLib.Sensors.gyro.Pigeon;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -53,8 +52,7 @@ public class AutoBalance extends CommandBase {
     @Override
     public boolean isFinished() { return tilt.getNorm() < kAutoBalance.FLATNESS_THRESHOLD_DEGREES; }
 
-    // TODO casting is cringe -- you are basically negating the genericism of your swerve drive
-    private double getRoll() { return ((Pigeon) swerve.getGyro()).getRoll(); }
+    private double getRoll() { return swerve.getGyro().getRoll(); }
 
-    private double getPitch() { return ((Pigeon) swerve.getGyro()).getPitch(); }
+    private double getPitch() { return swerve.getGyro().getPitch(); }
 }

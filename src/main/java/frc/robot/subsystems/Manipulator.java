@@ -4,8 +4,8 @@ import java.util.function.BooleanSupplier;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import SushiFrcLib.Math.MathUtil;
 import SushiFrcLib.Motor.MotorHelper;
 import SushiFrcLib.Sensors.absoluteEncoder.AbsoluteEncoder;
 import SushiFrcLib.SmartDashboard.PIDTuning;
@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
 import frc.robot.Constants.RobotState;
-import frc.robot.Constants.kManipulator;
 
 public class Manipulator extends SubsystemBase {
     private final CANSparkMax spinMotor;
@@ -33,8 +32,7 @@ public class Manipulator extends SubsystemBase {
     private final AbsoluteEncoder absoluteEncoder;
 
     private final TunableNumber targetTunable;
-    // TODO what is this variable name
-    private double manuSpeed;
+    private double spinMotorSpeed;
 
     private static Manipulator instance;
 
@@ -46,24 +44,23 @@ public class Manipulator extends SubsystemBase {
     }
 
     private Manipulator() {
-        spinMotor = MotorHelper.createSparkMax(kManipulator.SPIN_MOTOR_ID, MotorType.kBrushless, false, kManipulator.SPIN_CURRENT_LIMIT, IdleMode.kBrake);
-        positionMotor = MotorHelper.createSparkMax(kManipulator.POSITION_MOTOR_ID, MotorType.kBrushless, false, kManipulator.POSITION_CURRENT_LIMIT, IdleMode.kBrake, kManipulator.P_UP, kManipulator.I, kManipulator.D, 0.0);
+        spinMotor = Constants.Manipulator.SPIN_MOTOR.createSparkMax();
+        positionMotor =  Constants.Manipulator.POSITION_MOTOR.createSparkMax();
 
         if (Constants.TUNING_MODE) {
-            pid = new PIDTuning("Maniupaltor", kManipulator.P_UP, kManipulator.I, kManipulator.D, Constants.TUNING_MODE);
+            pid = new PIDTuning("Maniupaltor", Constants.Manipulator.POSITION_MOTOR.pid, Constants.TUNING_MODE);
         }
 
-        wristFeedforwardUp = new ArmFeedforward(0.0, kManipulator.G_UP, 0.0); 
-        wristFeedforwardDown = new ArmFeedforward(0.0, kManipulator.G_DOWN, 0.0); 
+        wristFeedforwardUp = new ArmFeedforward(0.0, Constants.Manipulator.G_UP, 0.0); 
+        wristFeedforwardDown = new ArmFeedforward(0.0, Constants.Manipulator.G_DOWN, 0.0); 
 
-        absoluteEncoder = new AbsoluteEncoder(kManipulator.ENCODER_CHANNEL, kManipulator.ENCODER_ANGLE_OFFSET);
-       
-        positionMotor.getEncoder().setPositionConversionFactor(360 / kManipulator.MANIPULATOR_GEAR_RATIO);
-        positionMotor.getEncoder().setVelocityConversionFactor((360 / kManipulator.MANIPULATOR_GEAR_RATIO) / 60);
+        absoluteEncoder = new AbsoluteEncoder(Constants.Manipulator.ENCODER_CHANNEL, Constants.Manipulator.ENCODER_ANGLE_OFFSET);
 
-        targetTunable = new TunableNumber("Wrist target", kManipulator.DEFUALT_VAL, Constants.TUNING_MODE);
-        manuSpeed = 0.0;
+        MotorHelper.setConversionFactor(positionMotor, Constants.Manipulator.GEAR_RATIO);
 
+        targetTunable = new TunableNumber("Wrist target",  Constants.DEFUAL_STATE.wristPos, Constants.TUNING_MODE);
+
+        spinMotorSpeed = 0.0;
         movingUp = true;
     } 
     
@@ -72,7 +69,7 @@ public class Manipulator extends SubsystemBase {
             runOnce(
                 () ->  {
                     movingUp = state.wristPos > positionMotor.getEncoder().getPosition();
-                    positionMotor.getPIDController().setP(movingUp ? kManipulator.P_UP : kManipulator.P_DOWN); // setting the P
+                    positionMotor.getPIDController().setP(movingUp ? Constants.Manipulator.P_UP : Constants.Manipulator.P_DOWN); // setting the P
                     targetTunable.setDefault(state.wristPos);
                 }
             ),
@@ -81,29 +78,17 @@ public class Manipulator extends SubsystemBase {
     }
 
     public BooleanSupplier closeToSetpoint(double setpoint) {
-        return () -> (getError(setpoint) < kManipulator.MAX_ERROR);
-    }
-
-    public double getAbsoluteError(){
-        return Math.abs(getWristPos() - absoluteEncoder.getNormalizedPosition());
+        return () -> (MathUtil.getError(positionMotor, setpoint) < Constants.Manipulator.MAX_ERROR);
     }
 
     public Command runWrist(RobotState state) {
         return runOnce(() -> {
-            manuSpeed = state.manipulatorSpeed;
+            spinMotorSpeed = state.manipulatorSpeed;
          });
     }
 
     public Command reverseCurrentWrist() {
-        return runOnce(() -> manuSpeed = manuSpeed * -1);
-    }
-
-    public double getError(double setpoint) {
-        return Math.abs(getWristPos() - setpoint);
-    }
-
-    public double getWristPos() {
-        return positionMotor.getEncoder().getPosition();
+        return runOnce(() -> spinMotorSpeed = spinMotorSpeed * -1);
     }
 
     public void resetWristPos() {
@@ -111,7 +96,7 @@ public class Manipulator extends SubsystemBase {
     }
 
     public Command turnOfSpeed() {
-        return runOnce(() -> manuSpeed = 0.0);
+        return runOnce(() -> spinMotorSpeed = 0.0);
     }
 
     @Override
@@ -122,11 +107,11 @@ public class Manipulator extends SubsystemBase {
             pid.updatePID(positionMotor);
         }
 
-        if (getAbsoluteError() > kManipulator.ERROR_LIMIT) {
+        if (MathUtil.getError(positionMotor, absoluteEncoder) > Constants.Manipulator.ERROR_LIMIT) {
             resetWristPos();
         }
 
-        spinMotor.set(manuSpeed);
+        spinMotor.set(spinMotorSpeed);
 
         positionMotor.getPIDController().setReference(
             targetTunable.get(),

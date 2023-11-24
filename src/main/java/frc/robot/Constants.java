@@ -6,9 +6,12 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.PIDConstants;
 
-import SushiFrcLib.Swerve.SDSModules;
+import SushiFrcLib.Control.PIDConfig;
+import SushiFrcLib.Motor.MotorConfig;
+import SushiFrcLib.Motor.MotorConfig.Mode;
 import SushiFrcLib.Swerve.SwerveKinematics;
-import SushiFrcLib.Swerve.SwerveModuleConstants;
+import SushiFrcLib.Swerve.SwerveModules.SDSModules;
+import SushiFrcLib.Swerve.SwerveModules.SwerveModuleConstants;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
@@ -24,58 +27,63 @@ import frc.robot.util.FutomakiSwerveModule;
  */
 public final class Constants {
     public static final boolean TUNING_MODE = false;
-    public static final double STICK_DEADBAND = 0.1;
+    public static final RobotState DEFUAL_STATE = RobotState.IDLE;
 
-    public static final class kOI {
-        // TODO kind of silly to have to have a constant that references another constant
-        public static final int DRIVE_TRANSLATION_Y = XboxController.Axis.kLeftY.value;
-        public static final int DRIVE_TRANSLATION_X = XboxController.Axis.kLeftX.value;
-        public static final int DRIVE_ROTATE = XboxController.Axis.kRightX.value;
-
+    public static final class OI {
+        public static final double STICK_DEADBAND = 0.1;
         public static final int UPDATE_ENCODER = XboxController.Button.kY.value;
-
-        public static final int DRIVE_PORT = 0;
-        public static final int OPERATOR_PORT = 1;
     }
 
-    public static class kPorts {
-        public static final String CANIVORE_NAME = "Sussy Squad"; // 👀
+    public static class Ports {
+        public static final String CANIVORE_NAME = "Sussy Squad";
         public static final int PIGEON_ID = 13;
     }
 
-    public static class kElevator {
-        public static final double P_UP = 0.1; // 0.03
+    public static class Elevator {
+        public static final double P_UP = 0.1;
         public static final double P_DOWN = 0.04;
-        public static final double I = 0;
-        public static final double D = 0;
         public static final double G_DOWN = 0.3;
         public static final double G_UP = 0.7;
 
-        public static final int LEFT_MOTOR_ID = 22;
-        public static final int RIGHT_MOTOR_ID = 20;
+        public static final MotorConfig LEFT_MOTOR = new MotorConfig(
+            22, 
+            40, 
+            false, 
+            MotorConfig.Mode.BRAKE
+        );
 
+        public static final MotorConfig RIGHT_MOTOR = new MotorConfig(
+            20, 
+            40, 
+            true, 
+            PIDConfig.getPid(P_UP), 
+            MotorConfig.Mode.BRAKE
+        );
+
+        public static final double MAX_ERROR = 5;
         public static final int MAX_POS = 50;
         public static final int MIN_POS = 0;
-        public static final double DEFUALT_VAL = RobotState.IDLE.elevatorPos;
-
-        public static final int CURRENT_LIMIT = 40;
-        public static final double MAX_ERROR = 5;
     }
     
-    public static final class kBuddyClimb {
-      public static final int BUDDY_CLIMB_MOTOR_ID = 30;
-      public static final int DOWN_CURRENT_LIMIT = 40;
-      public static final int UP_CURRENT_LIMIT = 1;
+    public static final class BuddyClimb {
+        public static final int DOWN_CURRENT_LIMIT = 40;
+        public static final int UP_CURRENT_LIMIT = 1;
+
+        public static final MotorConfig MOTOR_CONFIG = new MotorConfig(
+            30,
+            DOWN_CURRENT_LIMIT,
+            true,
+            Mode.BRAKE
+        );
     }
 
-    public static final class kSwerve {
+    public static final class Swerve {
         public static final boolean GYRO_INVERSION = false; // Always ensure Gyro is CCW+ CW-
 
         /* Drivetrain Constants */
         public static final double TRACK_WIDTH = Units.inchesToMeters(28);
         public static final double WHEEL_BASE = Units.inchesToMeters(28);
         public static final double WHEEL_DIAMATER = Units.inchesToMeters(4);
-        public static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMATER * Math.PI;
 
         public static final SwerveKinematics SWERVE_KINEMATICS = new SwerveKinematics(
           new Translation2d(-WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0),
@@ -84,73 +92,90 @@ public final class Constants {
           new Translation2d(-WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0)
         );
 
-        /* Swerve Current Limiting */
-        public static final int ANGLE_CURRENT_LIMIT = 20;
-        public static final int DRIVE_CURRENT_LIMIT = 60;
 
-        /* Translation Constants */
+        public static final MotorConfig ANGLE_CONFIG = new MotorConfig(
+            20,
+            false, // Make true if we have a stroke
+            PIDConfig.getPid(0.1), 
+            MotorConfig.Mode.BRAKE 
+        );
+
+        public static final MotorConfig DRIVE_CONFIG = new MotorConfig(
+            60,
+            false, 
+            PIDConfig.getPid(0.1, 0.0458), 
+            MotorConfig.Mode.BRAKE 
+        );
+
+        /* PathPlanner PID Constants */
         public static final PIDConstants TRANSLATION_CONSTANTS = new PIDConstants(3.5,0,0);
-
-        /* Rotation Constants */
         public static final PIDConstants ROTATION_CONSTANTS = new PIDConstants(3.0,0,0);
 
-        /* Angle Motor PID Values */
-        public static final double ANGLE_P = 0.1; // 0.3
-        public static final double ANGLE_I = 0.0;
-        public static final double ANGLE_D = 0.0;
-        public static final double ANGLE_F = 0.0; // 12.0
-
-        /* Drive Motor PID Values */
-        public static final double DRIVE_P = 0.1; // 0.025
-        public static final double DRIVE_I = 0.0;
-        public static final double DRIVE_D = 0.0;
-        public static final double DRIVE_F = 0.0458; // 0.04
+        /* AutoRotate PID */
+        public static final PIDConfig autoRotate = PIDConfig.getPid(0.1);
 
         /* Swerve Profiling Values */
         public static final double MAX_SPEED = 5; // 5 meters per second
-        public static final double MAX_ACCELERATION = 4; // 4
-        public static final double MAX_ANGULAR_VELOCITY = 2 * Math.PI; // 11.5
-        public static final double MAX_ANGULAR_ACCELERATION = 20; // 11.5
-
-        /* Motor Inverts */
-        public static final boolean DRIVE_INVERSION = false;
-        public static final boolean ANGLE_INVERSION = false; // make true if we have a stroke
+        public static final double MAX_ACCELERATION = 4; // 4 meters per second squared
+        public static final double MAX_ANGULAR_VELOCITY = 2 * Math.PI; // radians per second
+        public static final double MAX_ANGULAR_ACCELERATION = 20; // TODO: tune
 
         /* Angle Encoder Invert */
         public static final boolean CANCODER_INVERSION = true;
 
-        public static final boolean SWERVE_TUNNING_MODE = true;
+        public static final boolean SWERVE_TUNNING_MODE = false;
 
-        // TODO why do the categorization comments stop here
+        public static final SwerveModuleConstants MOD0_CONSTANTS = new FutomakiSwerveModule(
+            0, 
+            159.9, 
+            SDSModules.MK4i
+        );
 
-        // TODO: may be helpful to make more DTOs for stuff like these swerve constants, e.g. PID values, motor IDs, etc.
-        public static final SwerveModuleConstants MOD0_CONSTANTS = new FutomakiSwerveModule(0, 159.9, SDSModules.MK4i);
-        public static final SwerveModuleConstants MOD1_CONSTANTS = new FutomakiSwerveModule(1, 338.291, SDSModules.MK4i);
-        public static final SwerveModuleConstants MOD2_CONSTANTS = new FutomakiSwerveModule(2, 178.33, SDSModules.MK4i);
-        public static final SwerveModuleConstants MOD3_CONSTANTS = new FutomakiSwerveModule(3, 104.58, SDSModules.MK4i);
+        public static final SwerveModuleConstants MOD1_CONSTANTS = new FutomakiSwerveModule(
+            1, 
+            338.291, 
+            SDSModules.MK4i
+        );
+
+        public static final SwerveModuleConstants MOD2_CONSTANTS = new FutomakiSwerveModule(
+            2, 
+            178.33, 
+            SDSModules.MK4i
+        );
+
+        public static final SwerveModuleConstants MOD3_CONSTANTS = new FutomakiSwerveModule(
+            3, 
+            104.58, 
+            SDSModules.MK4i
+        );
     }
 
-  public static class kManipulator {
-    public static final double I = 0;
-    public static final double D = 0;
-
-    public static final double G_UP = 0.8; //0.2
+  public static class Manipulator {
+    public static final double G_UP = 0.8;
     public static final double G_DOWN = 0.2;
 
-    public static final double P_UP = 0.02; //set this
-    public static final double P_DOWN = 0.015; //set this
+    public static final double P_UP = 0.02; 
+    public static final double P_DOWN = 0.015;
 
-    public static final int SPIN_MOTOR_ID = 24;
-    public static final int POSITION_MOTOR_ID = 21;
+    public static final MotorConfig SPIN_MOTOR = new MotorConfig(
+        24,
+        40,
+        false,
+        PIDConfig.getPid(P_UP),
+        Mode.BRAKE
+    );
 
-    public static final double MANIPULATOR_GEAR_RATIO = 160/3; //160:3
+    public static final MotorConfig POSITION_MOTOR = new MotorConfig(
+        21,
+        30,
+        false,
+        Mode.BRAKE
+    );
+
+    public static final double GEAR_RATIO = 160/3; //160:3
     public static final int ENCODER_CHANNEL = 5;
     public static final double ENCODER_ANGLE_OFFSET = -153.77;
 
-    public static final int SPIN_CURRENT_LIMIT = 30;
-    public static final int POSITION_CURRENT_LIMIT = 40;
-
-    public static final double DEFUALT_VAL = RobotState.IDLE.wristPos;
     public static final double TUNE_HIGH_VAL = 100;
     public static final double TUNE_LOW_VAL = -30;
 
@@ -173,7 +198,7 @@ public final class Constants {
   public static class kAutoBalance {
     public static final double FLATNESS_THRESHOLD_DEGREES = 0.15;
     public static final double MAX_TILT_CHANGE_DIVIDER = 10;
-    public static final double MAX_SPEED = Constants.kSwerve.MAX_SPEED * 0.0085;
+    public static final double MAX_SPEED = Constants.Swerve.MAX_SPEED * 0.0085;
   }
 
   public enum RobotState {

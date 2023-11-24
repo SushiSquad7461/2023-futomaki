@@ -10,7 +10,7 @@ import frc.robot.subsystems.Manipulator;
 // TODO can swap to functional composition for constructing these commands, just looks a little cleaner
 public class CommandFactory {
     public static Command setRobotState(Manipulator manipulator, Elevator elevator, RobotState state) {
-        // TODO I'd avoid this pattern if possible because it basically makes the command un-cancellable. Not a big deal with how you are using it but still
+        // TODO I'd avoid this pattern if possible because it basically makes the command un-cancellable. Not a big deal with how you are using it but still, conditional command
         return new InstantCommand(() -> {
             boolean moveElevatorFirst =  state.elevatorPos > elevator.getPose() && state.wristPos < manipulator.getWristPos();
 

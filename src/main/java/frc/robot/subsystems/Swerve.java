@@ -5,8 +5,8 @@ import SushiFrcLib.Swerve.BaseSwerve;
 import SushiFrcLib.Swerve.SwerveModules.SwerveModuleNeoFalcon;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
-import frc.robot.Constants.kPorts;
-import frc.robot.Constants.kSwerve;
+import frc.robot.Constants;
+
 
 public class Swerve extends BaseSwerve {
     private static Swerve instance;
@@ -25,23 +25,19 @@ public class Swerve extends BaseSwerve {
     private Swerve() {
         super(
             new SwerveModuleNeoFalcon[]{
-                new SwerveModuleNeoFalcon(kSwerve.MOD0_CONSTANTS),
-                new SwerveModuleNeoFalcon(kSwerve.MOD1_CONSTANTS),
-                new SwerveModuleNeoFalcon(kSwerve.MOD2_CONSTANTS),
-                new SwerveModuleNeoFalcon(kSwerve.MOD3_CONSTANTS),
+                new SwerveModuleNeoFalcon(Constants.Swerve.MOD0_CONSTANTS),
+                new SwerveModuleNeoFalcon(Constants.Swerve.MOD1_CONSTANTS),
+                new SwerveModuleNeoFalcon(Constants.Swerve.MOD2_CONSTANTS),
+                new SwerveModuleNeoFalcon(Constants.Swerve.MOD3_CONSTANTS),
             },
-            new Pigeon(kPorts.PIGEON_ID, kSwerve.GYRO_INVERSION, kPorts.CANIVORE_NAME),
-            kSwerve.SWERVE_KINEMATICS,
-            kSwerve.MAX_SPEED,
-            kSwerve.SWERVE_TUNNING_MODE
+            new Pigeon(Constants.Ports.PIGEON_ID, Constants.Swerve.GYRO_INVERSION, Constants.Ports.CANIVORE_NAME),
+            Constants.Swerve.SWERVE_KINEMATICS,
+            Constants.Swerve.MAX_SPEED,
+            Constants.Swerve.SWERVE_TUNNING_MODE
         );
 
         locationLock = false;
-        rotationLockPID = new PIDController(
-            0.1, // sir this is not tunned pls retune like rn rnrnrnnrnrnrnrnrnrn TODO what
-            0.0, 
-            0.0
-        );
+        rotationLockPID = Constants.Swerve.autoRotate.getPIDController(); 
     }
 
     public void enableRotationLock(double angle) {
@@ -55,7 +51,8 @@ public class Swerve extends BaseSwerve {
         locationLock = false;
     }
 
-    public void driveWithRotationLock(Translation2d translation, double rotation) {
+    @Override
+    public void drive(Translation2d translation, double rotation) {
         if (locationLock) {
             rotation = rotationLockPID.calculate(getGyro().getAngle().getDegrees());
         }

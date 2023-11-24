@@ -3,9 +3,8 @@ package frc.robot.subsystems;
 import java.util.function.BooleanSupplier;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import SushiFrcLib.Motor.MotorHelper;
+
+import SushiFrcLib.Math.MathUtil;
 import SushiFrcLib.SmartDashboard.PIDTuning;
 import SushiFrcLib.SmartDashboard.TunableNumber;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
@@ -16,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
 import frc.robot.Constants.RobotState;
-import frc.robot.Constants.kElevator;
 
 public class Elevator extends SubsystemBase {
     private final CANSparkMax leftElevator;
@@ -42,22 +40,22 @@ public class Elevator extends SubsystemBase {
     }
 
     private Elevator() {
-        ffd = new ElevatorFeedforward(0, kElevator.G_DOWN, 0);
-        ffu = new ElevatorFeedforward(0, kElevator.G_UP, 0);
+        ffd = new ElevatorFeedforward(0, Constants.Elevator.G_DOWN, 0);
+        ffu = new ElevatorFeedforward(0, Constants.Elevator.G_UP, 0);
         up = true;
 
-        leftElevator = MotorHelper.createSparkMax(kElevator.LEFT_MOTOR_ID, MotorType.kBrushless, false, kElevator.CURRENT_LIMIT, IdleMode.kBrake);
-        rightElevator = MotorHelper.createSparkMax(kElevator.RIGHT_MOTOR_ID, MotorType.kBrushless, true, kElevator.CURRENT_LIMIT, IdleMode.kBrake, kElevator.P_UP, kElevator.I, kElevator.D, 0.0);
+        leftElevator = Constants.Elevator.LEFT_MOTOR.createSparkMax();
+        rightElevator = Constants.Elevator.RIGHT_MOTOR.createSparkMax();
 
         leftElevator.follow(rightElevator, true);
 
         resetElevator = false;
 
         if (Constants.TUNING_MODE) {
-            pid = new PIDTuning("Elevator", kElevator.P_UP, kElevator.I, kElevator.D, Constants.TUNING_MODE);
+            pid = new PIDTuning("Elevator", Constants.Elevator.RIGHT_MOTOR.pid, Constants.TUNING_MODE);
         }
       
-        setpoint = new TunableNumber("Elavator Setpoint", kElevator.DEFUALT_VAL, Constants.TUNING_MODE);
+        setpoint = new TunableNumber("Elavator Setpoint", Constants.DEFUAL_STATE.elevatorPos, Constants.TUNING_MODE);
     }
 
     public Command moveElevator(RobotState state) {
@@ -65,7 +63,7 @@ public class Elevator extends SubsystemBase {
             runOnce(
                 () -> {
                     up = state.elevatorPos > getPose();
-                    rightElevator.getPIDController().setP(up ? kElevator.P_UP : kElevator.P_DOWN);
+                    rightElevator.getPIDController().setP(up ? Constants.Elevator.P_UP : Constants.Elevator.P_DOWN);
                     setpoint.setDefault(state.elevatorPos);
                 }
             ),
@@ -93,12 +91,8 @@ public class Elevator extends SubsystemBase {
         );
     }
 
-    public double getError(double setpoint) {
-        return Math.abs(rightElevator.getEncoder().getPosition() - setpoint);
-    }
-
     public BooleanSupplier closeToSetpoint(double setpoint) {
-        return () -> (getError(setpoint) < kElevator.MAX_ERROR);
+        return () -> (MathUtil.getError(rightElevator, setpoint) < Constants.Elevator.MAX_ERROR);
     }
 
     public double getPose() {
@@ -115,7 +109,7 @@ public class Elevator extends SubsystemBase {
 
         if (!resetElevator) {
             rightElevator.getPIDController().setReference(
-                setpoint.get() > kElevator.MAX_POS || setpoint.get() < kElevator.MIN_POS ? kElevator.DEFUALT_VAL : setpoint.get(),
+                MathUtil.clamp(Constants.Elevator.MAX_POS, Constants.Elevator.MIN_POS, setpoint),
                 CANSparkMax.ControlType.kPosition,
                 0,
                 up ? ffu.calculate(0.0) : ffd.calculate(0.0)
