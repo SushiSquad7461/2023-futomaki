@@ -83,7 +83,9 @@ public class Manipulator extends SubsystemBase {
 
     public Command runWrist(RobotState state) {
         return runOnce(() -> {
-            spinMotorSpeed = state.manipulatorSpeed;
+            if (state.changeSpeed) {
+                spinMotorSpeed = state.manipulatorSpeed;
+            }
          });
     }
 
@@ -93,6 +95,10 @@ public class Manipulator extends SubsystemBase {
 
     public void resetWristPos() {
         positionMotor.getEncoder().setPosition(absoluteEncoder.getNormalizedPosition());
+    }
+
+    public double getWristPos() {
+        return positionMotor.getEncoder().getPosition();
     }
 
     public Command turnOfSpeed() {

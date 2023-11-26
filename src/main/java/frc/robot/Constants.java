@@ -32,6 +32,13 @@ public final class Constants {
     public static final class OI {
         public static final double STICK_DEADBAND = 0.1;
         public static final int UPDATE_ENCODER = XboxController.Button.kY.value;
+
+        public static final double SLOW_SPEED = 0.5;
+        public static final double FAST_SPEED = 1.0;
+
+        public static final double SINGLE_SUBY_ALLIGMENT = 270;
+        public static final double GRID_ALLIGMENT = 180;
+        public static final double DEFUALT_ALLIGMENT = 0;
     }
 
     public static class Ports {

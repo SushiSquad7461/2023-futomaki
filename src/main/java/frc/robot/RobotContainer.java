@@ -57,7 +57,7 @@ public class RobotContainer {
           () -> oi.getDriveTrainTranslationX(),
           () -> oi.getDriveTrainTranslationY(),
           () -> oi.getDriveTrainRotation(),
-          () -> elevator.getPose() > 20 ? 0.5 : 1.0 // TODO hard coded values
+          () -> elevator.getPose() > (Constants.Elevator.MAX_POS / 2) ? Constants.OI.SLOW_SPEED : Constants.OI.FAST_SPEED
       )
     );
 
@@ -65,22 +65,20 @@ public class RobotContainer {
     oi.getDriverController().leftTrigger().onTrue(CommandFactory.setRobotState(manipulator, elevator, RobotState.GROUND_CUBE)).onFalse(CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
     oi.getDriverController().rightBumper().onTrue(CommandFactory.setRobotState(manipulator, elevator, RobotState.SINGLE_CONE)).onFalse(CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE));
 
-    // TODO more hardcoded values
-    oi.getDriverController().b().onTrue(new InstantCommand(() -> swerve.enableRotationLock(270), swerve)).onFalse(new InstantCommand(() -> swerve.disableRotationLock(), swerve));
-    oi.getDriverController().x().onTrue(new InstantCommand(() -> swerve.enableRotationLock(180), swerve)).onFalse(new InstantCommand(() -> swerve.disableRotationLock(), swerve));
+    oi.getDriverController().b().onTrue(new InstantCommand(() -> swerve.enableRotationLock(Constants.OI.SINGLE_SUBY_ALLIGMENT), swerve)).onFalse(new InstantCommand(() -> swerve.disableRotationLock(), swerve));
+    oi.getDriverController().x().onTrue(new InstantCommand(() -> swerve.enableRotationLock(Constants.OI.GRID_ALLIGMENT), swerve)).onFalse(new InstantCommand(() -> swerve.disableRotationLock(), swerve));
+    oi.getDriverController().povUp().onTrue(new InstantCommand(() -> swerve.enableRotationLock(Constants.OI.DEFUALT_ALLIGMENT), swerve)).onFalse(new InstantCommand(() -> swerve.disableRotationLock(), swerve));
 
-    oi.getDriverController().povUp().onTrue(new InstantCommand(() -> swerve.enableRotationLock(0), swerve)).onFalse(new InstantCommand(() -> swerve.disableRotationLock(), swerve));
     oi.getDriverController().povDown().whileTrue(new AutoBalance());
 
-    // TODO what even is this
-    oi.getDriverController().leftBumper().onTrue(new InstantCommand(() -> scoreChooser.getSelected().schedule())).onFalse(new SequentialCommandGroup(
-      manipulator.reverseCurrentWrist(),
-      new WaitCommand(1.0),
-      CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE)
-    ));
+    // Score Command 
+    oi.getDriverController().leftBumper().onTrue(new InstantCommand(() -> scoreChooser.getSelected().schedule())).onFalse(manipulator.reverseCurrentWrist().
+      andThen(new WaitCommand(1.0)).
+      andThen(CommandFactory.setRobotState(manipulator, elevator, RobotState.IDLE))
+    );
 
     oi.getOperatorController().y().onTrue(elevator.resetElevatorPoseStart()).onFalse(elevator.resetElevatorPoseEnd());
-    oi.getOperatorController().a().onTrue(new InstantCommand(() -> swerve.resetGyro()));
+    oi.getOperatorController().a().onTrue(swerve.resetGyroCommand());
     oi.getOperatorController().x().onTrue(manipulator.turnOfSpeed());
 
     climb.setDefaultCommand(
