@@ -1,14 +1,9 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.Elevator;
 
-import java.util.function.BooleanSupplier;
+import org.littletonrobotics.junction.Logger;
 
-import com.revrobotics.CANSparkMax;
-
-import SushiFrcLib.Math.MathUtil;
 import SushiFrcLib.SmartDashboard.PIDTuning;
 import SushiFrcLib.SmartDashboard.TunableNumber;
-import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -17,16 +12,9 @@ import frc.robot.Constants;
 import frc.robot.Constants.RobotState;
 
 public class Elevator extends SubsystemBase {
-    private final CANSparkMax leftElevator;
-    private final CANSparkMax rightElevator;
-
     private PIDTuning pid;
-
     private final TunableNumber setpoint;
-    private final ElevatorFeedforward ffd;
-    private final ElevatorFeedforward ffu;
-    private static boolean up;
-
+    private final ElevatorIO io;
 
     private static Elevator instance;
     private boolean resetElevator;
@@ -40,15 +28,7 @@ public class Elevator extends SubsystemBase {
     }
 
     private Elevator() {
-        ffd = new ElevatorFeedforward(0, Constants.Elevator.G_DOWN, 0);
-        ffu = new ElevatorFeedforward(0, Constants.Elevator.G_UP, 0);
-        up = true;
-
-        leftElevator = Constants.Elevator.LEFT_MOTOR.createSparkMax();
-        rightElevator = Constants.Elevator.RIGHT_MOTOR.createSparkMax();
-
-        leftElevator.follow(rightElevator, true);
-
+        io = new ElevatorIOReal();
         resetElevator = false;
 
         if (Constants.TUNING_MODE) {
@@ -62,12 +42,10 @@ public class Elevator extends SubsystemBase {
         return new SequentialCommandGroup(
             runOnce(
                 () -> {
-                    up = state.elevatorPos > getPose();
-                    rightElevator.getPIDController().setP(up ? Constants.Elevator.P_UP : Constants.Elevator.P_DOWN);
                     setpoint.setDefault(state.elevatorPos);
                 }
             ),
-            new WaitUntilCommand(closeToSetpoint(state.elevatorPos))
+            new WaitUntilCommand(io.closeToSetpoint(state.elevatorPos))
         );
     }
 
@@ -75,7 +53,7 @@ public class Elevator extends SubsystemBase {
     public Command resetElevatorPoseStart() {
         return runOnce(
             () -> {
-                rightElevator.set(-0.1);
+                io.applySpeed(-0.1);
                 resetElevator = true;
             }
         );
@@ -84,36 +62,27 @@ public class Elevator extends SubsystemBase {
     public Command resetElevatorPoseEnd() {
         return runOnce(
             () -> {
-                rightElevator.set(0.0);
-                rightElevator.getEncoder().setPosition(0.0);
+                io.applySpeed(0.0);
+                io.setPosition(0.0);
                 resetElevator = false;
             }
         );
     }
 
-    public BooleanSupplier closeToSetpoint(double setpoint) {
-        return () -> (MathUtil.getError(rightElevator, setpoint) < Constants.Elevator.MAX_ERROR);
-    }
-
     public double getPose() {
-        return rightElevator.getEncoder().getPosition();
+        return io.getPosition();
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Elevator Position", rightElevator.getEncoder().getPosition());
+        Logger.recordOutput("Elevator/Position", getPose());
 
         if (Constants.TUNING_MODE) {
-            pid.updatePID(rightElevator);
+            io.updatePID(pid);
         }
 
         if (!resetElevator) {
-            rightElevator.getPIDController().setReference(
-                MathUtil.clamp(Constants.Elevator.MAX_POS, Constants.Elevator.MIN_POS, setpoint),
-                CANSparkMax.ControlType.kPosition,
-                0,
-                up ? ffu.calculate(0.0) : ffd.calculate(0.0)
-            );
+            io.setSetpoint(setpoint.get());
         }
     }
 }

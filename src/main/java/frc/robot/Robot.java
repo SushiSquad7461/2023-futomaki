@@ -4,8 +4,17 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.inputs.LoggedPowerDistribution;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
 import SushiFrcLib.SmartDashboard.AllianceColor;
-import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -17,7 +26,7 @@ import frc.robot.subsystems.Swerve;
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
   private Swerve swerve;
 
@@ -31,6 +40,30 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    Logger.recordMetadata("ProjectName", "2023Futomaki"); 
+    Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+    Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
+    Logger.recordMetadata("GitDirty", String.valueOf(BuildConstants.DIRTY));
+
+
+    if (isReal()) {
+        Logger.addDataReceiver(new WPILOGWriter("/U")); // Log to a USB stick
+        Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+        LoggedPowerDistribution.getInstance();
+    } else {
+        setUseTiming(false); // Run as fast as possible
+        String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
+        Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
+        Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
+    }
+    
+    // Logger.disableDeterministicTimestamps() // See "Deterministic Timestamps" in the "Understanding Data Flow" page
+    Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
+
+    CommandScheduler.getInstance().onCommandInitialize(command -> Logger.recordOutput("Command initialized", command.getName()));
+    CommandScheduler.getInstance().onCommandInterrupt(command -> Logger.recordOutput("Command interrupted", command.getName()));
+    CommandScheduler.getInstance().onCommandFinish(command -> Logger.recordOutput("Command finished", command.getName()));
+
     m_robotContainer = new RobotContainer();
     swerve = Swerve.getInstance();
     color = AllianceColor.getInstance();

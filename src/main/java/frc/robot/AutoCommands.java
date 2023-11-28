@@ -18,9 +18,9 @@ import frc.robot.Constants.RobotState;
 import frc.robot.Constants.kAuto;
 import frc.robot.commands.AutoBalance;
 import frc.robot.commands.CommandFactory;
-import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.Elevator.Elevator;
 
 public class AutoCommands {
     private SwerveAutoBuilder swerveAutoBuilder;
